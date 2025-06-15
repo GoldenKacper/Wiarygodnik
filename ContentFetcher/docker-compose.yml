@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: wiarygodnik
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: contentfetcherdb
+    volumes:
+      - contentfetcherpgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI :contentReference[oaicite:10]{index=10}
+
+  content_fetcher:
+    build:
+      context: ./content_fetcher
+      dockerfile: Dockerfile
+    env_file:
+      - ./content_fetcher/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8080"
+    ports:
+      - "8090:8080"
+
+volumes:
+  contentfetcherpgdata:
