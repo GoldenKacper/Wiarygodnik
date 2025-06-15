@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: report-service
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/report-db
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+logging:
+  logstash:
+    server: "localhost:5000"

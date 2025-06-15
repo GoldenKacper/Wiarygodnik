@@ -1,0 +1,11 @@
+package pl.edu.p.lodz.wiarygodnik.report
+
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+class ReportApplication
+
+fun main(args: Array<String>) {
+	runApplication<ReportApplication>(*args)
+}
