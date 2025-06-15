@@ -1,0 +1,68 @@
+services:
+
+  report-service:
+    build:
+      context: report-service
+    image: report-service:latest
+    deploy:
+      replicas: 2
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://report-db:5432/report-db
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - LOGGING_LOGSTASH_SERVER=logstash:5000
+    networks:
+      - wiarygodnik
+      - elk_network
+    depends_on:
+      - report-db
+      - rabbitmq
+
+  report-db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: report-db
+    volumes:
+      - report-db:/var/lib/postgresql/data
+    networks:
+      - wiarygodnik
+      - elk_network
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - wiarygodnik
+      - elk_network
+
+  load-balancer:
+    image: nginx:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./load-balancer/conf.d:/etc/nginx/conf.d
+    networks:
+      - wiarygodnik
+      - elk_network
+    depends_on:
+      - report-service
+
+volumes:
+  report-db:
+
+networks:
+  wiarygodnik:
+    driver: bridge
+  elk_network:
+    external: true

@@ -1,28 +1,5 @@
 services:
 
-  report-db:
-    image: postgres:latest
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: report-db
-    volumes:
-      - report-db:/var/lib/postgresql/data
-
-  rabbitmq:
-    image: rabbitmq:latest
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
   elasticsearch:
     image: elasticsearch:7.10.1
     volumes:
@@ -32,6 +9,8 @@ services:
       - "9300:9300"
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+        - network
 
   logstash:
     image: logstash:7.10.1
@@ -44,6 +23,8 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     depends_on:
       - elasticsearch
+    networks:
+        - network
 
   kibana:
     image: kibana:7.10.1
@@ -53,6 +34,9 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+    networks:
+        - network
 
-volumes:
-  report-db:
+networks:
+  network:
+    driver: bridge
