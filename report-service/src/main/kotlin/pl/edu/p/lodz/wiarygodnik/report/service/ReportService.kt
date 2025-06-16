@@ -15,12 +15,13 @@ class ReportService(
     private val reportRepository: ReportRepository
 ) {
 
-    fun orderReportCreation(urlRequest: UrlRequest) {
+    fun orderReportCreation(urlRequest: UrlRequest): Long {
         val newReport = Report(sourceUrl = urlRequest.url)
         val persistedReport = reportRepository.save(newReport)
 
         val reportCreationOrder = ReportCreationOrder(persistedReport.id, persistedReport.sourceUrl)
         producer.sendReportCreationOrder(reportCreationOrder)
+        return persistedReport.id
     }
 
     fun updateReportContent(reportContent: ReportContent) {
