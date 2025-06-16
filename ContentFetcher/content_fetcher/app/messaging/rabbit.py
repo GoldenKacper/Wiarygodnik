@@ -9,6 +9,7 @@ import httpx
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..logging import logger
 from ..schemas import FetchRequest, FetchResponse
 from ..db import AsyncSessionLocal
 from ..models import Content
@@ -41,7 +42,7 @@ async def db_session():
 async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
     async with msg.process(ignore_processed=True):
         try:
-            print("[*] Received message:", msg.body.decode())
+            logger.info("[*] Received message:", extra={'message-body': msg.body.decode()})
             raw = json.loads(msg.body.decode())
 
             # ujednolicamy: jeśli przyszedł pojedynczy obiekt, ubieramy w listę
@@ -49,9 +50,8 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                 raw = [raw]
 
             batch: List[FetchRequest] = [FetchRequest(**item) for item in raw]
-            print(batch)
         except (json.JSONDecodeError, ValidationError) as exc:
-            print(f"[x] Invalid payload: {exc}")
+            logger.error(f"[x] Invalid payload: {exc}")
             return
 
         results: List[Dict[str, Any]] = []
@@ -61,7 +61,7 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                 try:
                     content, keywords = await _fetch_and_extract(req.url)
                 except httpx.RequestError as exc:
-                    print(f"[x] Request error: {exc}")
+                    logger.error(f"[x] Request error: {exc}")
                     results.append(
                         {
                             "status": "error",
@@ -95,7 +95,7 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                     )
 
                 except IntegrityError as exc:
-                    print(f"[x] Integrity error: {exc}")
+                    logger.error(f"[x] Integrity error: {exc}")
                     await db.rollback()
                     results.append(
                         {
@@ -107,7 +107,7 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                     )
 
                 except Exception as exc:
-                    print(f"[x] DB error: {exc}")
+                    logger.error(f"[x] DB error: {exc}")
                     await db.rollback()
                     results.append(
                         {
@@ -119,6 +119,7 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                     )
 
         await publish_result(results)
+        logger.info("[*] Results published to RabbitMQ exchange:", extra={'exchange': EXCHANGE})
 
 # ---------- publish helper ----------
 async def publish_result(body: list[dict]):
@@ -135,24 +136,24 @@ async def publish_result(body: list[dict]):
 
 # ---------- główna pętla konsumenta ----------
 async def run_consumer() -> None:
-    print("[*] Starting RabbitMQ consumer...")
+    logger.info("[*] Starting RabbitMQ consumer...")
     try:
         connection = await connect_robust(host="rabbitmq")
     except Exception as exc:
-        print(f"[x] Failed to connect to RabbitMQ: {exc}")
+        logger.error(f"[x] Failed to connect to RabbitMQ: {exc}")
         return
-    print("[*] Connected to RabbitMQ at", settings.RABBITMQ_URL)
+    logger.info("[*] Connected to RabbitMQ at")
     async with connection:
         try:
             channel = await connection.channel()
             await channel.declare_exchange(EXCHANGE, ExchangeType.TOPIC, durable=True)
             queue = await channel.declare_queue(REQUEST_QUEUE, durable=True)
             await queue.bind(EXCHANGE, routing_key=REQUEST_QUEUE)
-            print("[*] Waiting for messages (batch mode). To exit press CTRL+C")
+            logger.info("[*] Waiting for messages (batch mode). To exit press CTRL+C")
             await queue.consume(handle_request)
             await asyncio.Future()            # run forever
         except Exception as exc:
-            print(f"[x] Error in consumer: {exc}")
+            logger.error(f"[x] Error in consumer: {exc}")
             await connection.close()
             raise
 

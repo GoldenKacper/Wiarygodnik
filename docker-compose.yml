@@ -64,7 +64,7 @@ services:
     networks:
       - wiarygodnik
 
-  content-fetcher:
+  content-fetcher-service:
     build:
       context: ./ContentFetcher/content_fetcher
       dockerfile: Dockerfile
