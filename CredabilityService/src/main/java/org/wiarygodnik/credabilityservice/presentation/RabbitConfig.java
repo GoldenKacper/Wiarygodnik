@@ -16,7 +16,7 @@ import org.springframework.amqp.core.Queue;
 public class RabbitConfig {
 
     public static final String EXCHANGE_NAME = "wiarygodnik.exchange";
-    public static final String QUEUE_CONTENT = "credibility.service.content.queue";
+    public static final String QUEUE_CONTENT = "content.fetch.result";
     public static final String ROUTING_CONTENT = "routing.content";
     public static final String QUEUE_RESULTS = "credibility.service.results.queue";
     public static final String ROUTING_RESULTS = "routing.results";

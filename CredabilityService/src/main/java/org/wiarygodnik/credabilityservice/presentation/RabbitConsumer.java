@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wiarygodnik.credabilityservice.application.UrlService;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class RabbitConsumer {
@@ -17,8 +19,9 @@ public class RabbitConsumer {
     }
 
     @RabbitListener(queues = RabbitConfig.QUEUE_CONTENT)
-    public void receiveContent(UrlContentDTO urlContentDTO) {
-        urlService.handleUrlContent(new org.wiarygodnik.credabilityservice.application.UrlContent(urlContentDTO.reportId(), urlContentDTO.url(), urlContentDTO.content(), urlContentDTO.keywords()));
+    public void receiveContent(List<UrlContentDTO> urlContentDTO) {
+        var dto = urlContentDTO.getFirst();
+        urlService.handleUrlContent(new org.wiarygodnik.credabilityservice.application.UrlContent(dto.reportId(), dto.url(), null, List.of("test")));
         log.info("URL content received");
     }
 }

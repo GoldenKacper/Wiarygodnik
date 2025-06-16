@@ -41,11 +41,15 @@ async def db_session():
 async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
     async with msg.process(ignore_processed=True):
         try:
+            print("[*] Received message:", msg.body.decode())
             raw = json.loads(msg.body.decode())
+
             # ujednolicamy: jeśli przyszedł pojedynczy obiekt, ubieramy w listę
             if not isinstance(raw, list):
                 raw = [raw]
+
             batch: List[FetchRequest] = [FetchRequest(**item) for item in raw]
+            print(batch)
         except (json.JSONDecodeError, ValidationError) as exc:
             print(f"[x] Invalid payload: {exc}")
             return
@@ -57,12 +61,13 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                 try:
                     content, keywords = await _fetch_and_extract(req.url)
                 except httpx.RequestError as exc:
+                    print(f"[x] Request error: {exc}")
                     results.append(
                         {
                             "status": "error",
                             "reason": str(exc),
                             "url": req.url,
-                            "report_id": req.report_id,
+                            "reportId": req.reportId,
                         }
                     )
                     continue
@@ -73,7 +78,7 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                         url=req.url,
                         content=content,
                         keywords=keywords,
-                        report_id=req.report_id,
+                        report_id=str(req.reportId),
                     )
                     db.add(row)
                     await db.commit()
@@ -85,28 +90,31 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
                             url=row.url,
                             keywords=keywords,
                             content=content,
-                            report_id=row.report_id,
+                            reportId=int(req.reportId),
                         ).model_dump()
                     )
 
-                except IntegrityError:
+                except IntegrityError as exc:
+                    print(f"[x] Integrity error: {exc}")
                     await db.rollback()
                     results.append(
                         {
                             "status": "conflict",
                             "reason": "duplicate (url, report_id)",
                             "url": req.url,
-                            "report_id": req.report_id,
+                            "reportId": req.reportId,
                         }
                     )
+
                 except Exception as exc:
+                    print(f"[x] DB error: {exc}")
                     await db.rollback()
                     results.append(
                         {
                             "status": "error",
                             "reason": f"DB error: {exc}",
                             "url": req.url,
-                            "report_id": req.report_id,
+                            "reportId": req.reportId,
                         }
                     )
 
@@ -114,10 +122,12 @@ async def handle_request(msg: IncomingMessage) -> Coroutine[Any, Any, None]:
 
 # ---------- publish helper ----------
 async def publish_result(body: list[dict]):
-    connection = await connect_robust(settings.RABBITMQ_URL)
+    connection = await connect_robust(host="rabbitmq")
     async with connection:
         channel = await connection.channel()
-        await channel.declare_exchange(EXCHANGE, ExchangeType.DIRECT)
+        await channel.declare_exchange(EXCHANGE, ExchangeType.TOPIC, durable=True)
+        result_queue = await channel.declare_queue(RESULT_QUEUE, durable=True)
+        await result_queue.bind(EXCHANGE, routing_key=RESULT_QUEUE)
         await channel.default_exchange.publish(
             Message(json.dumps(body).encode()),
             routing_key=RESULT_QUEUE,
@@ -125,15 +135,26 @@ async def publish_result(body: list[dict]):
 
 # ---------- główna pętla konsumenta ----------
 async def run_consumer() -> None:
-    connection = await connect_robust(settings.RABBITMQ_URL)
+    print("[*] Starting RabbitMQ consumer...")
+    try:
+        connection = await connect_robust(host="rabbitmq")
+    except Exception as exc:
+        print(f"[x] Failed to connect to RabbitMQ: {exc}")
+        return
+    print("[*] Connected to RabbitMQ at", settings.RABBITMQ_URL)
     async with connection:
-        channel = await connection.channel()
-        await channel.declare_exchange(EXCHANGE, ExchangeType.DIRECT)
-        queue = await channel.declare_queue(REQUEST_QUEUE, durable=True)
-        await queue.bind(EXCHANGE, routing_key=REQUEST_QUEUE)
-        print("[*] Waiting for messages (batch mode). To exit press CTRL+C")
-        await queue.consume(handle_request)
-        await asyncio.Future()            # run forever
+        try:
+            channel = await connection.channel()
+            await channel.declare_exchange(EXCHANGE, ExchangeType.TOPIC, durable=True)
+            queue = await channel.declare_queue(REQUEST_QUEUE, durable=True)
+            await queue.bind(EXCHANGE, routing_key=REQUEST_QUEUE)
+            print("[*] Waiting for messages (batch mode). To exit press CTRL+C")
+            await queue.consume(handle_request)
+            await asyncio.Future()            # run forever
+        except Exception as exc:
+            print(f"[x] Error in consumer: {exc}")
+            await connection.close()
+            raise
 
 
 # Przykładowy payload do kolejki `content.fetch.request`
