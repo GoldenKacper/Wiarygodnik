@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: content-analysis-service
+
+  ai:
+    ollama:
+      chat:
+        options:
+          model: "gpt-oss"
+
+jina:
+  api-key: ""
