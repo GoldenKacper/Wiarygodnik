@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import pl.edu.p.lodz.wiarygodnik.cas.service.KeywordWebSearcher
 
 @Service
 class SerpKeywordWebSearcher(
+    webClientBuilder: WebClient.Builder,
     @Value("\${serpapi.url}") private val baseUrl: String,
     @Value("\${serpapi.limit}") private val limit: Int,
     @Value("\${serpapi.api-key}") private val apiKey: String
 ) : KeywordWebSearcher {
 
-    private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
+    private val webClient: WebClient = webClientBuilder.baseUrl(baseUrl).build()
 
     override fun searchTopUrls(keywords: List<String>): List<String> =
         webClient.get()

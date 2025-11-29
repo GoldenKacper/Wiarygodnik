@@ -5,16 +5,16 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import pl.edu.p.lodz.wiarygodnik.cas.service.WebScraper
-import pl.edu.p.lodz.wiarygodnik.cas.service.dto.ScrapedWebContent
+import pl.edu.p.lodz.wiarygodnik.cas.model.ScrapedWebContent
 
 @Service
 class JinaScraper(
+    webClientBuilder: WebClient.Builder,
     @Value("\${jina.url}") private val baseUrl: String,
     @Value("\${jina.api-key}") private val apiKey: String
-): WebScraper {
+) : WebScraper {
 
-    private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
+    private val webClient: WebClient = webClientBuilder.baseUrl(baseUrl).build()
 
     override fun scrape(url: String): ScrapedWebContent = webClient.get()
         .uri { builder -> builder.path(url).build() }
