@@ -9,7 +9,7 @@ spring:
     password: guest
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/content-analysis-service-db
+    url: jdbc:postgresql://localhost:5431/content-analysis-service-db
     username: postgres
     password: postgres
   jpa:
@@ -22,9 +22,15 @@ spring:
         options:
           model: "gpt-oss"
 
+logging:
+  logstash:
+    server: "localhost:5000"
+
 jina:
   url: "https://r.jina.ai"
+  api-key: "jina_ba76ef6cf3164b3e9c7f0c2b24d1396drDyP_392jjRXb0VGVeL-jS4PSYao"
 
 serpapi:
   url: "https://serpapi.com"
-  limit: 2
+  limit: 1
+  api-key: "ec03c7acf8d09400d1f24f6bf24180c60b2c6869fb891377b898503260324257"

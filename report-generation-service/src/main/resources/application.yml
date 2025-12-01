@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: report-generation-service
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/report-generation-service-db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  ai:
+    ollama:
+      chat:
+        options:
+          model: "gpt-oss"
+
+server:
+  port: 8081
+
+logging:
+  logstash:
+    server: "localhost:5000"
