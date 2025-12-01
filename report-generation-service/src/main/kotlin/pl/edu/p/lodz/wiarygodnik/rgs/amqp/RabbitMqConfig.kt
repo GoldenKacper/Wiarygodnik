@@ -1,4 +1,4 @@
-package pl.edu.p.lodz.wiarygodnik.cas.amqp
+package pl.edu.p.lodz.wiarygodnik.rgs.amqp
 
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
@@ -27,13 +27,13 @@ class RabbitMQConfig {
     }
 
     @Bean
-    fun analysisResultsQueue(): Queue {
+    fun contentAnalysisServiceResultsQueue(): Queue {
         return Queue(ANALYSIS_RESULTS_QUEUE)
     }
 
     @Bean
-    fun analysisBinding(): Binding {
-        return BindingBuilder.bind(analysisResultsQueue()).to(exchange()).with(ANALYSIS_ROUTING_KEY)
+    fun reportCreatedBinding(): Binding {
+        return BindingBuilder.bind(contentAnalysisServiceResultsQueue()).to(exchange()).with(ANALYSIS_ROUTING_KEY)
     }
 
     @Bean

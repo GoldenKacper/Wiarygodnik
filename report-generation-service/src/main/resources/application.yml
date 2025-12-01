@@ -1,6 +1,6 @@
 spring:
   application:
-    name: content-analysis-service
+    name: report-generation-service
 
   rabbitmq:
     host: localhost
@@ -9,7 +9,7 @@ spring:
     password: guest
 
   datasource:
-    url: jdbc:postgresql://localhost:5431/content-analysis-service-db
+    url: jdbc:postgresql://localhost:5432/report-generation-service-db
     username: postgres
     password: postgres
   jpa:
@@ -22,13 +22,9 @@ spring:
         options:
           model: "gpt-oss"
 
+server:
+  port: 8081
+
 logging:
   logstash:
     server: "localhost:5000"
-
-jina:
-  url: "https://r.jina.ai"
-
-serpapi:
-  url: "https://serpapi.com"
-  limit: 1

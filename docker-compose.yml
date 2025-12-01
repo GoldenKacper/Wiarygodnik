@@ -3,11 +3,11 @@ services:
   content-analysis-service:
     build:
       context: content-analysis-service
-    image: report-service:latest
+    image: content-analysis-service:latest
     deploy:
       replicas: 2
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://report-db:5432/content-analysis-service-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://content-analysis-service-db:5431/content-analysis-service-db
       - SPRING_RABBITMQ_HOST=rabbitmq
       - LOGGING_LOGSTASH_SERVER=logstash:5000
     networks:
@@ -21,7 +21,7 @@ services:
     image: postgres:15
     restart: always
     ports:
-      - "5432:5432"
+      - "5431:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -31,34 +31,34 @@ services:
     networks:
       - wiarygodnik
 
-  report-service:
+  report-generation-service:
     build:
-      context: report-service
-    image: report-service:latest
+      context: report-generation-service
+    image: report-generation-service:latest
     deploy:
       replicas: 2
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://report-db:5432/report-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://report-generation-service-db:5432/report-generation-service-db
       - SPRING_RABBITMQ_HOST=rabbitmq
       - LOGGING_LOGSTASH_SERVER=logstash:5000
     networks:
       - wiarygodnik
       - elk_network
     depends_on:
-      - report-db
+      - report-generation-service-db
       - rabbitmq
 
-  report-db:
-    image: postgres:latest
+  report-generation-service-db:
+    image: postgres:15
     restart: always
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: report-db
+      POSTGRES_DB: report-generation-service-db
     volumes:
-      - report-db:/var/lib/postgresql/data
+      - report-generation-service-db:/var/lib/postgresql/data
     networks:
       - wiarygodnik
 
@@ -148,12 +148,12 @@ services:
     networks:
       - wiarygodnik
     depends_on:
-      - report-service
+      - content-analysis-service
 
 volumes:
   content-analysis-service-db:
+  report-generation-service-db:
   postgres_data_credibility:
-  report-db:
   contentfetcherpgdata:
 
 networks:
