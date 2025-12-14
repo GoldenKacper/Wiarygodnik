@@ -66,7 +66,7 @@ tasks.withType<Test> {
 
 sonar {
     properties {
-        property("sonar.projectKey", "GoldenKacper_Wiarygodnik")
+        property("sonar.projectKey", "goldenkacper_Wiarygodnik_report-generation-service")
         property("sonar.organization", "goldenkacper")
         property("sonar.host.url", "https://sonarcloud.io")
     }
