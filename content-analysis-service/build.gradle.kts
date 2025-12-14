@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.sonarqube") version "5.0.0.4638"
 }
 
 group = "pl.edu.p.lodz.wiarygodnik"
@@ -59,4 +60,12 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "GoldenKacper_Wiarygodnik")
+        property("sonar.organization", "goldenkacper")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
