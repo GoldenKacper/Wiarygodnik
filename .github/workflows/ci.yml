@@ -32,9 +32,15 @@ jobs:
         working-directory: report-generation-service
         run: chmod +x gradlew
 
-      - name: Build & test report-generation-service
+      - name: Build & test (report-generation-service)
         working-directory: report-generation-service
         run: ./gradlew clean test
+
+      - name: SonarCloud analysis (report-generation-service)
+        working-directory: report-generation-service
+        run: ./gradlew sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
       # -------- content-analysis-service --------
@@ -42,6 +48,12 @@ jobs:
         working-directory: content-analysis-service
         run: chmod +x gradlew
 
-      - name: Build & test content-analysis-service
+      - name: Build & test (content-analysis-service)
         working-directory: content-analysis-service
         run: ./gradlew clean test
+
+      - name: SonarCloud analysis (content-analysis-service)
+        working-directory: content-analysis-service
+        run: ./gradlew sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
