@@ -30,7 +30,7 @@ jobs:
 
 
       # -------- report-generation-service --------
-      # Add necessary permissions for gradlew
+      # Make gradlew executable for report-generation-service
       - name: Make gradlew executable (report-generation-service)
         working-directory: report-generation-service
         run: chmod +x gradlew
@@ -40,7 +40,7 @@ jobs:
         working-directory: report-generation-service
         run: ./gradlew clean test
 
-      # Made SonarCloud analysis
+      # Run SonarCloud analysis
       - name: SonarCloud analysis (report-generation-service)
         working-directory: report-generation-service
         run: ./gradlew clean sonar
@@ -49,7 +49,7 @@ jobs:
 
 
       # -------- content-analysis-service --------
-      # Add necessary permissions for gradlew
+      # Make gradlew executable for report-generation-service
       - name: Make gradlew executable (content-analysis-service)
         working-directory: content-analysis-service
         run: chmod +x gradlew
@@ -59,7 +59,7 @@ jobs:
         working-directory: content-analysis-service
         run: ./gradlew clean test
 
-      # Made SonarCloud analysis
+      # Run SonarCloud analysis
       - name: SonarCloud analysis (content-analysis-service)
         working-directory: content-analysis-service
         run: ./gradlew clean sonar

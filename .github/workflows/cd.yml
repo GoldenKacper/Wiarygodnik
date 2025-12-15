@@ -53,12 +53,18 @@ jobs:
       - name: Build & push Docker image (report-generation-service)
         working-directory: report-generation-service
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/report-generation-service:latest .
+          docker build \
+            -t ghcr.io/${{ github.repository }}/report-generation-service:latest \
+            -t ghcr.io/${{ github.repository }}/report-generation-service:${{ github.sha }} .
           docker push ghcr.io/${{ github.repository }}/report-generation-service:latest
+          docker push ghcr.io/${{ github.repository }}/report-generation-service:${{ github.sha }}
 
       # Build & push Docker image (content-analysis-service)
       - name: Build & push Docker image (content-analysis-service)
         working-directory: content-analysis-service
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/content-analysis-service:latest .
+          docker build \
+            -t ghcr.io/${{ github.repository }}/content-analysis-service:latest \
+            -t ghcr.io/${{ github.repository }}/content-analysis-service:${{ github.sha }} .
           docker push ghcr.io/${{ github.repository }}/content-analysis-service:latest
+          docker push ghcr.io/${{ github.repository }}/content-analysis-service:${{ github.sha }}
