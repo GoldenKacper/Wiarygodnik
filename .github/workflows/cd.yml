@@ -49,26 +49,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Set repository name to lowercase for Docker image tags
-      - name: Set lowercase repo name
-        run: echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
       # Build & push Docker image (report-generation-service)
       - name: Build & push Docker image (report-generation-service)
         working-directory: report-generation-service
         run: |
           docker build \
-            -t ghcr.io/${REPO_LOWER}/report-generation-service:latest \
-            -t ghcr.io/${REPO_LOWER}/report-generation-service:${{ github.sha }} .
-          docker push ghcr.io/${REPO_LOWER}/report-generation-service:latest
-          docker push ghcr.io/${REPO_LOWER}/report-generation-service:${{ github.sha }}
+            -t ghcr.io/goldenkacper/report-generation-service:latest \
+            -t ghcr.io/goldenkacper/report-generation-service:${{ github.sha }} .
+          docker push ghcr.io/goldenkacper/report-generation-service:latest
+          docker push ghcr.io/goldenkacper/report-generation-service:${{ github.sha }}
 
       # Build & push Docker image (content-analysis-service)
       - name: Build & push Docker image (content-analysis-service)
         working-directory: content-analysis-service
         run: |
           docker build \
-            -t ghcr.io/${REPO_LOWER}/content-analysis-service:latest \
-            -t ghcr.io/${REPO_LOWER}/content-analysis-service:${{ github.sha }} .
-          docker push ghcr.io/${REPO_LOWER}/content-analysis-service:latest
-          docker push ghcr.io/${REPO_LOWER}/content-analysis-service:${{ github.sha }}
+            -t ghcr.io/goldenkacper/content-analysis-service:latest \
+            -t ghcr.io/goldenkacper/content-analysis-service:${{ github.sha }} .
+          docker push ghcr.io/goldenkacper/content-analysis-service:latest
+          docker push ghcr.io/goldenkacper/content-analysis-service:${{ github.sha }}
