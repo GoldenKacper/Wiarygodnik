@@ -20,7 +20,7 @@ export const Home = () => {
                     </Typography>
                     <Button
                         component={Link}
-                        to="/raports"
+                        to="/reports"
                         variant="contained"
                         size="large"
                         sx={{

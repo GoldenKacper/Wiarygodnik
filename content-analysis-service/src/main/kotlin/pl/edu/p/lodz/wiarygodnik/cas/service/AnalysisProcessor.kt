@@ -15,6 +15,7 @@ import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentAnalysis
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentComparison
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ScrapedWebContent
 import pl.edu.p.lodz.wiarygodnik.cas.repository.AnalysisRepository
+import pl.edu.p.lodz.wiarygodnik.cas.security.PrincipalProvider
 import pl.edu.p.lodz.wiarygodnik.cas.service.analyser.ContentAnalyser
 import pl.edu.p.lodz.wiarygodnik.cas.service.comparator.ContentComparator
 import pl.edu.p.lodz.wiarygodnik.cas.service.scraper.WebScraper
@@ -48,6 +49,7 @@ class AnalysisProcessor(
     private fun prepareNewAnalysis(url: String) =
         AnalysisEntity(
             requestId = UUID.randomUUID().toString(),
+            userId = PrincipalProvider.getCurrentUserId(),
             sourceUrl = url,
             status = ANALYSING_CONTENT
         )
@@ -69,7 +71,13 @@ class AnalysisProcessor(
             )
             switchAnalysisStatus(analysisEntity, COMPLETED)
 
-            val result = AnalysisResult(analysisEntity.requestId, analysisEntity.sourceUrl, analysis, comparison)
+            val result = AnalysisResult(
+                analysisEntity.requestId,
+                analysisEntity.userId,
+                analysisEntity.sourceUrl,
+                analysis,
+                comparison
+            )
             log.info { "Analysis process finished. Sending result for report generation. [analysisId: ${analysisEntity.id}, requestId: ${analysisEntity.requestId}]" }
             producer.sendAnalysis(result)
         } catch (e: Exception) {

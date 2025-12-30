@@ -6,9 +6,10 @@ enum class Sentiment {
 
 data class AnalysisResult(
     val requestId: String,
+    val userId: String,
     val sourceUrl: String,
     val contentAnalysis: ContentAnalysis,
-    val contentComparison: ContentComparison
+    val contentComparison: ContentComparison,
 )
 
 data class ContentAnalysis(val summarization: ContentSummarization, val sentiment: ContentSentiment)

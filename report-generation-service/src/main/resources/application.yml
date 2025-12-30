@@ -2,6 +2,12 @@ spring:
   application:
     name: report-generation-service
 
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: http://localhost:8888/realms/wiarygodnik
+
   rabbitmq:
     host: localhost
     port: 5672
@@ -23,7 +29,7 @@ spring:
           model: "gpt-oss"
 
 server:
-  port: 8081
+  port: 8082
 
 logging:
   logstash:

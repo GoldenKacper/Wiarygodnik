@@ -4,8 +4,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus
+import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus.FAILED
+import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus.GENERATED
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 import pl.edu.p.lodz.wiarygodnik.rgs.repo.ReportRepository
+import pl.edu.p.lodz.wiarygodnik.rgs.security.PrincipalProvider
 
 @Service
 class ReportService(
@@ -16,28 +20,36 @@ class ReportService(
     private val log = KotlinLogging.logger {}
 
     fun createReport(analysisResult: AnalysisResult) {
-        val newReport = prepareInitialReport(analysisResult)
+        val newReport = Report.fromAnalysisResult(analysisResult)
         val persistedReport = reportRepository.save(newReport)
         log.info { "Initial report persisted to database [reportId: ${persistedReport.id}, requestId: ${analysisResult.requestId}]" }
 
-        log.info { "Generating report... [reportId: ${persistedReport.id}, requestId: ${analysisResult.requestId}]" }
-        val generatedReport = analysisReportGenerator.generate(analysisResult)
-        persistedReport.fillWithGeneratedContent(generatedReport)
-        reportRepository.save(persistedReport)
-        log.info { "Report generated successfully and persisted to databse [reportId: ${persistedReport.id}], requestId: ${analysisResult.requestId}" }
+        try {
+            log.info { "Generating report... [reportId: ${persistedReport.id}, requestId: ${analysisResult.requestId}]" }
+            val reportGenerationResult: ReportGenerationResult = analysisReportGenerator.generate(analysisResult)
+            persistedReport.fillWithGeneratedContent(reportGenerationResult)
+            reportRepository.save(persistedReport)
+            log.info { "Report generated successfully and persisted to database [reportId: ${persistedReport.id}], requestId: ${analysisResult.requestId}" }
+        } catch (e: Exception) {
+            log.error(e) { "Generating report failed" }
+            persistedReport.status = FAILED
+            reportRepository.save(persistedReport)
+        }
     }
 
-    private fun prepareInitialReport(analysisResult: AnalysisResult): Report =
-        Report(
-            requestId = analysisResult.requestId,
-            sourceUrl = analysisResult.sourceUrl
-        )
-
-    fun getReportContent(requestId: String): Report =
-        reportRepository.findReportByRequestId(requestId) ?: throw NoSuchElementException("Report not found")
-
     fun getReportStatus(requestId: String): ReportStatus {
-        return getReportContent(requestId).status
+        return findReportByRequestId(requestId).status
+    }
+
+    fun findReportByRequestId(requestId: String): Report {
+        val currentUserId = PrincipalProvider.getCurrentUserId()
+        return reportRepository.findReportByRequestIdAndUserIdAndStatus(requestId, currentUserId, GENERATED)
+            ?: throw NoSuchElementException("Report not found")
+    }
+
+    fun findAllReportsForCurrentUser(): List<Report> {
+        val currentUserId = PrincipalProvider.getCurrentUserId()
+        return reportRepository.findAllByUserIdAndStatus(currentUserId, GENERATED)
     }
 
 }

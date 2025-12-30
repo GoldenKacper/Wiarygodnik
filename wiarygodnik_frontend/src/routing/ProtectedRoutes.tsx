@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import useKeycloak from "../hooks/useKeycloak";
+import useKeycloak from "../shared/hooks/useKeycloak";
 import AccessDenied from "../pages/AccessDenied";
 import Loading from "../pages/Loading";
 

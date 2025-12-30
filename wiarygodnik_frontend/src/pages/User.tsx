@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { userPageButton, userPageButtonIcon, userPageButtonText, userPageDivider } from "../Style.tsx";
 import InfoIcon from '@mui/icons-material/Info';
 import SettingsIcon from '@mui/icons-material/Settings';
-import useKeycloak from "../hooks/useKeycloak.tsx";
+import useKeycloak from "../shared/hooks/useKeycloak.ts";
 
 function User() {
     const { keycloak } = useKeycloak();

@@ -4,23 +4,25 @@ import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.model.ChatModel
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
+import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 
 @Component
 class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader: ResourceLoader) {
 
     private val chatClient = ChatClient.create(chatModel)
 
-    fun generate(input: AnalysisResult): String {
+    fun generate(input: AnalysisResult): ReportGenerationResult {
         val analysisReportGenerationPrompt: String = prepareAnalysisReportGenerationPrompt(input)
         return callChatGeneration(analysisReportGenerationPrompt)
     }
 
-    private fun callChatGeneration(input: String): String = chatClient.prompt()
+    private fun callChatGeneration(input: String): ReportGenerationResult = chatClient.prompt()
         .system { system -> system.text(readSystemPrompt()) }
         .user { user -> user.text(input) }
         .call()
-        .content()
+        .entity(ReportGenerationResult::class.java)
         ?: throw RuntimeException("LLM returned a null object while generating a report.")
 
     private fun readSystemPrompt(): String =

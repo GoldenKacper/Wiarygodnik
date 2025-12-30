@@ -2,6 +2,12 @@ spring:
   application:
     name: content-analysis-service
 
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: http://localhost:8888/realms/wiarygodnik
+
   rabbitmq:
     host: localhost
     port: 5672

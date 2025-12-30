@@ -27,19 +27,5 @@ class ContentSummarizationAgent(chatModel: ChatModel) :
         - Bierz pod uwagę tylko właściwą treść artykułu.
         - Ignoruj wszelkie fragmenty niezwiązane z artykułem.
         - Wszystkie odpowiedzi muszą być **w języku polskim**.
-
-        ### Format odpowiedzi
-        Zwróć wynik w następującym formacie:
-
-        PODSUMOWANIE:
-        [tu podsumowanie]
-
-        SŁOWA KLUCZOWE:
-        - słowo1
-        - słowo2
-        - słowo3
-        [...]
-
-        Nie dodawaj nic ponad ten format i nie używaj innych języków.
     """.trimIndent()
 }

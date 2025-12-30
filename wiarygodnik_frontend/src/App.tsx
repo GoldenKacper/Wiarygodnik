@@ -1,11 +1,14 @@
-import { KeycloakProvider } from './context/KeycloakContext.tsx';
+import { ToastProvider } from './components/toast/ToastProvider.tsx';
+import { KeycloakProvider } from './shared/context/KeycloakContext.tsx';
 import AppRouter from './routing/AppRouter.tsx';
 
 function App() {
     return (
-        <KeycloakProvider>
-            <AppRouter />
-        </KeycloakProvider>
+        <ToastProvider>
+            <KeycloakProvider>
+                <AppRouter />
+            </KeycloakProvider>
+        </ToastProvider>
     );
 }
 

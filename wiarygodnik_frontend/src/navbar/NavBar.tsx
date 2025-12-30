@@ -1,11 +1,11 @@
 import { useIsMobile } from "../common/UseIsMobile.tsx";
-import { Box, Button, Typography, AppBar, Toolbar } from "@mui/material";
+import { Box, Button, AppBar, Toolbar } from "@mui/material";
 import logo from "/logo_full_350_80.png";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import theme from "../theme.ts";
 import { useLocation, useNavigate } from "react-router-dom";
-import useKeycloak from "../hooks/useKeycloak.tsx";
+import useKeycloak from "../shared/hooks/useKeycloak.ts";
 
 type NavBarProps = {
     menuActive: boolean | undefined;
@@ -41,10 +41,11 @@ function NavBar(props: NavBarProps) {
                 px: isMobile ? 0 : 4
             }}>
                 <Box sx={{ justifySelf: "start", width: "70px" }}>
-                    {!authenticated || location.pathname !== "/raports" ? null :
+                    {authenticated && location.pathname.startsWith("/reports") ? (
                         <Button aria-label={"menu-button"} onClick={handleMenuClick}>
                             <MenuOutlinedIcon sx={{ color: theme.palette.primary.main, fontSize: "2rem" }} />
                         </Button>
+                    ) : null
                     }
                 </Box>
 

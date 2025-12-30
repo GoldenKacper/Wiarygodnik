@@ -31,7 +31,10 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
 
             keycloakInstance
                 .init({ onLoad: 'check-sso' })
-                .then((authenticated: boolean) => setAuthenticated(authenticated))
+                .then((authenticated: boolean) => { 
+                    setAuthenticated(authenticated);
+                    localStorage.setItem('token', keycloakInstance.token || '');
+                })
                 .catch((error) => {
                     console.error('Keycloak initialization failed:', error);
                     setAuthenticated(false);

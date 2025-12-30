@@ -46,17 +46,5 @@ class ContentComparisonAgent(chatModel: ChatModel) :
            - Nie wypisuj żadnych URL‑i ani informacji, które nie mają wyraźnego powiązania z treścią GŁÓWNEGO ŹRÓDŁA.
            - Nie oceniaj wiarygodności źródeł – opisuj wyłącznie to, czy i jak ich treść **potwierdza, uzupełnia lub neguje** informacje z GŁÓWNEGO ŹRÓDŁA.
            - Nie dodawaj treści ani faktów spoza otrzymanych podsumowań.
-        
-        ### FORMAT ODPOWIEDZI:
-        
-        OPIS OGÓLNY:  
-        [krótkie podsumowanie zgodności/rozbieżności między źródłami względem GŁÓWNEGO ŹRÓDŁA]
-        
-        PORÓWNANIE ŹRÓDEŁ:  
-        - url1 – [które informacje z GŁÓWNEGO ŹRÓDŁA potwierdza / częściowo potwierdza / uzupełnia / neguje i w jaki sposób]  
-        - url2 – [które informacje z GŁÓWNEGO ŹRÓDŁA potwierdza / częściowo potwierdza / uzupełnia / neguje i w jaki sposób]  
-        - url3 – [...]  
-        
-        Nie dodawaj nic ponad ten format i nie używaj innych języków niż polski.
     """.trimIndent()
 }

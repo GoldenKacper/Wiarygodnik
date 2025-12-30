@@ -38,21 +38,5 @@ class ContentSentimentAgent(chatModel: ChatModel) :
            - perswazyjny - PERSUASIVE,
            - agresywny - AGGRESSIVE, 
            - formalny - FORMAL.
-           
-        ### FORMAT ODPOWIEDZI:
-        
-        NACECHOWANIE GŁÓWNE:  
-        [krótki opis ogólnego tonu tekstu]
-        
-        LISTA NACECHOWAŃ Z PRZYKŁADAMI:  
-        - [rodzaj nacechowania 1]  
-          - "[cytat 1]" – [krótki komentarz]  
-          - "[cytat 2]" – [krótki komentarz]  
-        - [rodzaj nacechowania 2]  
-          - "[cytat 1]" – [krótki komentarz]  
-          - "[cytat 2]" – [krótki komentarz]  
-        - [...]
-        
-        Nie dodawaj nic ponad ten format i nie używaj innych języków niż polski.
     """.trimIndent()
 }

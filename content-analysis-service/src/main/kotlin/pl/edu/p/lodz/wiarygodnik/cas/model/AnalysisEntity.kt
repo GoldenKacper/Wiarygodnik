@@ -12,6 +12,7 @@ enum class AnalysisStatus {
 class AnalysisEntity(
     @Id @GeneratedValue(strategy = IDENTITY) var id: Long = 0,
     val requestId: String = "",
+    val userId: String = "",
     var sourceUrl: String = "",
     @Enumerated(EnumType.STRING) var status: AnalysisStatus = ANALYSING_CONTENT,
 )
