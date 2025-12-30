@@ -1,4 +1,4 @@
-import { useAnalysisApi, type AnalyseResponse } from "../http/analysis.api";
+import { useAnalysisApi, type AnalyseResponse } from "../api/analysis.api";
 
 export const useAnalyseSource = () => {
   const { analyseSource } = useAnalysisApi();

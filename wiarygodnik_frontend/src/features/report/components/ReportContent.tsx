@@ -4,9 +4,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CircleIcon from '@mui/icons-material/Circle';
-import { getDomain } from "../../common/Scripts.tsx";
-import { sourceDot, sourceLink } from "../../Style.tsx";
-import type { ReportContentResponse } from "../../http/report.api.ts";
+import { getDomain } from "../../../lib/domainExtractor.ts";
+import { sourceDot, sourceLink } from "../../../Style.tsx";
+import type { ReportContentResponse } from "../api/report.api.ts";
 import { ReportCredability } from "./ReportCredability.tsx";
 
 interface ReportContentProps {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useAnalysisApi, type AnalysisStatusResponse } from '../http/analysis.api';
-import { useReportApi, type ReportStatusResponse } from '../http/report.api';
-import { AnalysisStatus } from "../components/reports/domain/AnalysisStatus.ts";
+import { useAnalysisApi, type AnalysisStatusResponse } from '../api/analysis.api';
+import { useReportApi, type ReportStatusResponse } from '../api/report.api';
+import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
 
 export const useAnalysisStatus = (requestId: string | undefined) => {
     const { getAnalysisStatus } = useAnalysisApi();

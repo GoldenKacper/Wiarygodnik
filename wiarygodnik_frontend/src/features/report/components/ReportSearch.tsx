@@ -1,9 +1,9 @@
 import { Box, Button, Input, Typography } from "@mui/material";
-import theme from "../../theme.ts";
+import theme from "../../../theme.ts";
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAnalyseSource } from "../../hooks/useAnalyseSource.ts";
+import { useAnalyseSource } from "../hooks/useAnalyseSource.ts";
 
 export const ReportSearch = () => {
     const navigate = useNavigate();

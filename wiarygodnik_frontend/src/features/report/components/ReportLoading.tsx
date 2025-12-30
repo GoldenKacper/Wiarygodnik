@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
-import theme from "../../theme";
+import theme from "../../../theme";
 
 interface ReportLoadingProps {
     loadingStatus?: string;

@@ -1,4 +1,4 @@
-import type { ReportCreadabilityLevel } from "../../http/report.api";
+import type { ReportCreadabilityLevel } from "../api/report.api";
 import ErrorIcon from '@mui/icons-material/Error';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

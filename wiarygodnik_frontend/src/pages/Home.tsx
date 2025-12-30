@@ -1,8 +1,8 @@
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import NavBar from "../navbar/NavBar";
+import NavBar from "../layout/NavBar";
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { useIsMobile } from "../common/UseIsMobile";
+import { useIsMobile } from "../hooks/useIsMobile";
 import theme from "../theme";
 
 export const Home = () => {

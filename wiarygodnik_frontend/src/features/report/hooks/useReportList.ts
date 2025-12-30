@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useReportApi, type ReportListItemResponse } from '../http/report.api';
+import { useReportApi, type ReportListItemResponse } from '../api/report.api';
 
 export const useReportsList = () => {
   const { getAllMyReports } = useReportApi();

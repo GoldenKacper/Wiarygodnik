@@ -1,16 +1,16 @@
-import NavBar from "../navbar/NavBar.tsx";
+import NavBar from "../layout/NavBar.tsx";
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useIsMobile } from "../common/UseIsMobile.tsx";
+import { useIsMobile } from "../hooks/useIsMobile.ts";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAnalysisStatus } from "../hooks/useAnalysisStatus.ts";
-import { useReport } from "../hooks/useReport.ts";
-import { ReportList } from "../components/reports/ReportList.tsx";
-import { ReportSearch } from "../components/reports/ReportSearch.tsx";
-import { ReportContent } from "../components/reports/ReportContent.tsx";
-import { ReportLoading } from "../components/reports/ReportLoading.tsx";
+import { useAnalysisStatus } from "../features/report/hooks/useAnalysisStatus.ts";
+import { useReport } from "../features/report/hooks/useReport.ts";
+import { ReportList } from "../features/report/components/ReportList.tsx";
+import { ReportSearch } from "../features/report/components/ReportSearch.tsx";
+import { ReportContent } from "../features/report/components/ReportContent.tsx";
+import { ReportLoading } from "../features/report/components/ReportLoading.tsx";
 import { enqueueSnackbar } from "notistack";
-import { AnalysisStatus } from "../components/reports/domain/AnalysisStatus.ts";
+import { AnalysisStatus } from "../features/report/domain/AnalysisStatus.ts";
 
 function Reports() {
     const isMobile = useIsMobile();

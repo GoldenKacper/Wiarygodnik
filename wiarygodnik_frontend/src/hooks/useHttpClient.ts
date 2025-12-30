@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import axios, { HttpStatusCode, type AxiosInstance } from 'axios';
 import { enqueueSnackbar } from 'notistack';
-import useKeycloak from './useKeycloak';
+import useKeycloak from '../features/auth/hooks/useKeycloak';
 
 export const useHttpClient = (baseURL: string): AxiosInstance => {
   const { keycloak, authenticated } = useKeycloak();

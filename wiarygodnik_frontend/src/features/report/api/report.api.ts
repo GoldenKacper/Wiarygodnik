@@ -1,4 +1,4 @@
-import { useHttpClient } from "../shared/hooks/useHttpClient";
+import { useHttpClient } from "../../../hooks/useHttpClient";
 
 export type ReportCreadabilityLevel = "HIGH" | "MEDIUM" | "LOW";
 

@@ -4,7 +4,7 @@ import Divider from "@mui/material/Divider";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ReportListButton } from "./ReportListButton.tsx";
-import { useReportsList } from "../../hooks/useReportList.ts";
+import { useReportsList } from "../hooks/useReportList.ts";
 import { NewReportButton } from "./NewReportButton.tsx";
 
 

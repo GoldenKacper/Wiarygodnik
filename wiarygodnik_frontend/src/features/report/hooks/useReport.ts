@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useReportApi, type ReportContentResponse } from '../http/report.api';
-import { AnalysisStatus } from "../components/reports/domain/AnalysisStatus.ts";
+import { useReportApi, type ReportContentResponse } from '../api/report.api';
+import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
 
 export const useReport = (requestId: string | undefined, status: string | undefined) => {
   const { getMyReport } = useReportApi();

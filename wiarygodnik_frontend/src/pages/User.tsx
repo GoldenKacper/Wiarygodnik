@@ -1,12 +1,12 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
-import NavBar from "../navbar/NavBar.tsx";
+import NavBar from "../layout/NavBar.tsx";
 import PersonIcon from '@mui/icons-material/Person';
 import theme from "../theme.ts";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { userPageButton, userPageButtonIcon, userPageButtonText, userPageDivider } from "../Style.tsx";
 import InfoIcon from '@mui/icons-material/Info';
 import SettingsIcon from '@mui/icons-material/Settings';
-import useKeycloak from "../shared/hooks/useKeycloak.ts";
+import useKeycloak from "../features/auth/hooks/useKeycloak.ts";
 
 function User() {
     const { keycloak } = useKeycloak();

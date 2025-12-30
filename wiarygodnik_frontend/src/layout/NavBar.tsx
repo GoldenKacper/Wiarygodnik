@@ -1,11 +1,11 @@
-import { useIsMobile } from "../common/UseIsMobile.tsx";
+import { useIsMobile } from "../hooks/useIsMobile.ts";
 import { Box, Button, AppBar, Toolbar } from "@mui/material";
 import logo from "/logo_full_350_80.png";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import theme from "../theme.ts";
 import { useLocation, useNavigate } from "react-router-dom";
-import useKeycloak from "../shared/hooks/useKeycloak.ts";
+import useKeycloak from "../features/auth/hooks/useKeycloak.ts";
 
 type NavBarProps = {
     menuActive: boolean | undefined;

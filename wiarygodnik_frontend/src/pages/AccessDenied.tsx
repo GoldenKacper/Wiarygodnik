@@ -1,5 +1,5 @@
 import { Box, Container, Typography } from "@mui/material";
-import NavBar from "../navbar/NavBar";
+import NavBar from "../layout/NavBar";
 
 export default function AccessDenied() {
     return (
