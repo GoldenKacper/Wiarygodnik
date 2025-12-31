@@ -1,7 +1,8 @@
 import { useIsMobile } from "../hooks/useIsMobile.ts";
-import { Box, Button, AppBar, Toolbar } from "@mui/material";
+import { Box, Button, AppBar, Toolbar, Tooltip } from "@mui/material";
 import logo from "/logo_full_350_80.png";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import ArticleIcon from '@mui/icons-material/Article';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import theme from "../theme.ts";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -32,6 +33,10 @@ function NavBar(props: NavBarProps) {
         }
     }
 
+    function handleReportsClick() {
+        navigate("/reports");
+    }
+
     return (
         <AppBar position="static" color="transparent" elevation={0}>
             <Toolbar sx={{
@@ -41,12 +46,21 @@ function NavBar(props: NavBarProps) {
                 px: isMobile ? 0 : 4
             }}>
                 <Box sx={{ justifySelf: "start", width: "70px" }}>
-                    {authenticated && location.pathname.startsWith("/reports") ? (
-                        <Button aria-label={"menu-button"} onClick={handleMenuClick}>
-                            <MenuOutlinedIcon sx={{ color: theme.palette.primary.main, fontSize: "2rem" }} />
-                        </Button>
-                    ) : null
-                    }
+                    {authenticated ?
+                        location.pathname.startsWith("/reports") ? (
+                            <Tooltip title="Ukryj/Pokaż listę raportów">
+                                <Button aria-label={"menu-button"} onClick={handleMenuClick} title="ess">
+                                    <MenuOutlinedIcon sx={{ color: theme.palette.primary.main, fontSize: "2rem" }} />
+                                </Button>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip title="Przejdź do raportów">
+                                <Button aria-label={"reports-button"} onClick={handleReportsClick}>
+                                    <ArticleIcon sx={{ color: theme.palette.primary.main, fontSize: "2rem" }} />
+                                </Button>
+                            </Tooltip>
+                        )
+                        : null}
                 </Box>
 
                 <Box sx={{ justifySelf: "center" }}>
@@ -61,9 +75,11 @@ function NavBar(props: NavBarProps) {
 
                 <Box sx={{ justifySelf: "end", width: "70px" }}>
                     {authenticated && location.pathname !== "/user" ? (
-                        <Button aria-label={"account-button"} onClick={handleUserClick}>
-                            <AccountCircleOutlinedIcon sx={{ color: theme.palette.primary.main, fontSize: isMobile ? "2rem" : "3rem" }} />
-                        </Button>
+                        <Tooltip title="Przejdź do konta">
+                            <Button aria-label={"account-button"} onClick={handleUserClick}>
+                                <AccountCircleOutlinedIcon sx={{ color: theme.palette.primary.main, fontSize: isMobile ? "2rem" : "3rem" }} />
+                            </Button>
+                        </Tooltip>
                     ) : null}
                 </Box>
 

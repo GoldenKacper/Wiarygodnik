@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import NavBar from "../layout/NavBar.tsx";
 import PersonIcon from '@mui/icons-material/Person';
 import theme from "../theme.ts";
@@ -7,16 +7,17 @@ import { userPageButton, userPageButtonIcon, userPageButtonText, userPageDivider
 import InfoIcon from '@mui/icons-material/Info';
 import SettingsIcon from '@mui/icons-material/Settings';
 import useKeycloak from "../features/auth/hooks/useKeycloak.ts";
+import { useKeycloakProfile } from "../features/auth/hooks/useKeycloakProfile.ts";
 
 function User() {
-    const { keycloak } = useKeycloak();
+    const { keycloak, authenticated } = useKeycloak();
+    const profile = useKeycloakProfile(keycloak, authenticated);
 
-    const handleLogout = () => {
-        keycloak?.logout();
-    };
+    const handleSettings = () => keycloak?.accountManagement();
+    const handleLogout = () => keycloak?.logout({ redirectUri: window.location.origin });
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <NavBar menuActive={undefined} setMenuActive={undefined} />
             <Box sx={{ width: "100vw", height: "calc(100vh - 100px)", display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <Box sx={{
@@ -26,11 +27,11 @@ function User() {
                 }}>
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
                         <PersonIcon sx={{ fontSize: "5rem" }} />
-                        <Typography sx={{ fontSize: "2rem", textAlign: "center" }}>{keycloak?.idTokenParsed?.name}!</Typography>
+                        <Typography sx={{ fontSize: "2rem", textAlign: "center" }}>{profile?.firstName} {profile?.lastName}</Typography>
                     </Box>
                     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 0, marginTop: "auto" }}>
                         <Divider sx={userPageDivider} />
-                        <Button aria-label={"settings"} sx={userPageButton}>
+                        <Button aria-label={"settings"} sx={userPageButton} onClick={handleSettings}>
                             <SettingsIcon sx={userPageButtonIcon} />
                             <Typography sx={userPageButtonText}>Ustawienia</Typography>
                         </Button>
@@ -50,7 +51,7 @@ function User() {
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Container>
     )
 }
 
