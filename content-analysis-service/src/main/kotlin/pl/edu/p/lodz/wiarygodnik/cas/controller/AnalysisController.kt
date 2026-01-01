@@ -6,6 +6,8 @@ import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pl.edu.p.lodz.wiarygodnik.cas.model.AnalysisStatus
+import pl.edu.p.lodz.wiarygodnik.cas.model.dto.AnalysisData
+import pl.edu.p.lodz.wiarygodnik.cas.model.mapper.AnalysisMapper
 import pl.edu.p.lodz.wiarygodnik.cas.service.AnalysisProcessor
 import pl.edu.p.lodz.wiarygodnik.cas.service.AnalysisService
 
@@ -13,8 +15,10 @@ import pl.edu.p.lodz.wiarygodnik.cas.service.AnalysisService
 @RequestMapping("/api/analysis")
 class AnalysisController(
     private val analysisProcessor: AnalysisProcessor,
-    private val analysisService: AnalysisService
+    private val analysisService: AnalysisService,
 ) {
+
+    private val analysisMapper = AnalysisMapper()
 
     @PostMapping("/process")
     fun analyze(@RequestBody request: AnalyseRequest): ResponseEntity<AnalyseResponse> {
@@ -23,8 +27,12 @@ class AnalysisController(
     }
 
     @GetMapping("/status/{requestId}")
-    fun getAnalysis(@PathVariable requestId: String): ResponseEntity<AnalysisStatusResponse> =
+    fun getAnalysisStatus(@PathVariable requestId: String): ResponseEntity<AnalysisStatusResponse> =
         ResponseEntity.ok(AnalysisStatusResponse(analysisService.getAnalysisStatus(requestId)))
+
+    @GetMapping("/{requestId}")
+    fun getAnalysis(@PathVariable requestId: String): ResponseEntity<AnalysisData> =
+        ResponseEntity.ok(analysisMapper.mapToDto(analysisService.getAnalysis(requestId)))
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
@@ -34,4 +42,5 @@ class AnalysisController(
     data class AnalyseRequest(val url: String)
     data class AnalyseResponse(val requestId: String)
     data class AnalysisStatusResponse(val status: AnalysisStatus)
+
 }

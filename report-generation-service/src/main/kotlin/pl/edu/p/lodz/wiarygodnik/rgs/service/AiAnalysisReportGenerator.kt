@@ -4,8 +4,7 @@ import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.model.ChatModel
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
-import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 
 @Component
@@ -13,7 +12,7 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
 
     private val chatClient = ChatClient.create(chatModel)
 
-    fun generate(input: AnalysisResult): ReportGenerationResult {
+    fun generate(input: AnalysisResultMessage): ReportGenerationResult {
         val analysisReportGenerationPrompt: String = prepareAnalysisReportGenerationPrompt(input)
         return callChatGeneration(analysisReportGenerationPrompt)
     }
@@ -31,9 +30,9 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
             .bufferedReader()
             .readText()
 
-    private fun prepareAnalysisReportGenerationPrompt(analysisResult: AnalysisResult): String = """
+    private fun prepareAnalysisReportGenerationPrompt(analysisResult: AnalysisResultMessage): String = """
         ### Analiza nacechowania:
-        ${analysisResult.contentAnalysis.sentiment.description}
+        ${analysisResult.contentAnalysis.sentiment.summary}
         
         ### Przykłady nacechowania:
         ${
@@ -56,18 +55,24 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
         }
     }
         
+        ${
+        analysisResult.contentComparison?.let {
+            """
         ### Porównanie z innymi źródłami:
-        ${analysisResult.contentComparison.description}
-        
+        ${it.description}
+
         ### Przykłady porównań:
         ${
-        analysisResult.contentComparison.sourcesFacts.map { source ->
-            """
+                it.sourcesFacts.map { source ->
+                    """
                 
                 Źródło: ${source.url}
                 Fakty: ${source.facts.joinToString { it }}
                 
             """.trimIndent()
+                }
+            }
+            """
         }
     }
     """.trimIndent()

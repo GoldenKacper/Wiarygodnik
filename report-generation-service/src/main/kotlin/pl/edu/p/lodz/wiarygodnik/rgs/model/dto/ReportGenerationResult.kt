@@ -1,3 +1,5 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.model.dto
 
-data class ReportGenerationResult(val title: String, val content: String)
+import pl.edu.p.lodz.wiarygodnik.rgs.model.CredibilityLevel
+
+data class ReportGenerationResult(val title: String, val content: String, val credibilityLevel: CredibilityLevel)

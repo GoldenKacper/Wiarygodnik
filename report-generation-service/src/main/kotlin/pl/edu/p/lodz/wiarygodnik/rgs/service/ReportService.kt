@@ -6,7 +6,7 @@ import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus.FAILED
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus.GENERATED
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 import pl.edu.p.lodz.wiarygodnik.rgs.repo.ReportRepository
 import pl.edu.p.lodz.wiarygodnik.rgs.security.PrincipalProvider
@@ -19,7 +19,7 @@ class ReportService(
 
     private val log = KotlinLogging.logger {}
 
-    fun createReport(analysisResult: AnalysisResult) {
+    fun createReport(analysisResult: AnalysisResultMessage) {
         val newReport = Report.fromAnalysisResult(analysisResult)
         val persistedReport = reportRepository.save(newReport)
         log.info { "Initial report persisted to database [reportId: ${persistedReport.id}, requestId: ${analysisResult.requestId}]" }

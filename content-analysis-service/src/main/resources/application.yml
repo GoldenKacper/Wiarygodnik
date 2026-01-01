@@ -31,8 +31,6 @@ spring:
 logging:
   logstash:
     server: "localhost:5000"
-  level:
-    org.springframework.security: DEBUG
 
 jina:
   url: "https://r.jina.ai"

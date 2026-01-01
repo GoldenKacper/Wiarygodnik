@@ -49,7 +49,7 @@ function NavBar(props: NavBarProps) {
                     {authenticated ?
                         location.pathname.startsWith("/reports") ? (
                             <Tooltip title="Ukryj/Pokaż listę raportów">
-                                <Button aria-label={"menu-button"} onClick={handleMenuClick} title="ess">
+                                <Button aria-label={"menu-button"} onClick={handleMenuClick}>
                                     <MenuOutlinedIcon sx={{ color: theme.palette.primary.main, fontSize: "2rem" }} />
                                 </Button>
                             </Tooltip>

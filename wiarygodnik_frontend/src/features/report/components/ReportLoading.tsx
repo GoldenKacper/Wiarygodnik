@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import theme from "../../../theme";
+import { mapAnalysisStatus } from "../lib/AnalysisStatusMapper";
 
 interface ReportLoadingProps {
     loadingStatus?: string;
@@ -14,7 +15,7 @@ export const ReportLoading = ({ loadingStatus }: ReportLoadingProps) => {
         }}>
             <CircularProgress size="4.5rem" sx={{ margin: "auto" }} />
             <Typography sx={{ textAlign: "center", fontSize: "1.4rem", fontWeight: "light", color: theme.palette.text.secondary }}>
-                {loadingStatus}
+                {loadingStatus && mapAnalysisStatus(loadingStatus)}
             </Typography>
         </Box>
     );

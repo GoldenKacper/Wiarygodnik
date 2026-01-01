@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    kotlin("plugin.noarg") version "2.3.0"
     id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.sonarqube") version "5.0.0.4638"
@@ -63,6 +64,10 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+noArg {
+    annotation("jakarta.persistence.Entity")
 }
 
 sonar {

@@ -11,6 +11,7 @@ import { ReportContent } from "../features/report/components/ReportContent.tsx";
 import { ReportLoading } from "../features/report/components/ReportLoading.tsx";
 import { enqueueSnackbar } from "notistack";
 import { AnalysisStatus } from "../features/report/domain/AnalysisStatus.ts";
+import { useAnalysis } from "../features/report/hooks/useAnalysis.ts";
 
 function Reports() {
     const isMobile = useIsMobile();
@@ -19,6 +20,7 @@ function Reports() {
     const { requestId } = useParams();
     const status = useAnalysisStatus(requestId);
     const report = useReport(requestId, status);
+    const analysis = useAnalysis(requestId, status);
 
     const [menuActive, setMenuActive] = useState<boolean>(!isMobile);
 
@@ -35,7 +37,7 @@ function Reports() {
             <Box sx={{ display: "flex", width: "100vw" }}>
                 {menuActive && <ReportList />}
                 <Box sx={{ display: "flex", flexDirection: "column", width: isMobile ? "100%" : "80%", height: "calc(100vh - 100px)", padding: "10px", margin: "auto" }}>
-                    {report ? <ReportContent report={report} /> : status ? <ReportLoading loadingStatus={status} /> : <ReportSearch />}
+                    {report && analysis ? <ReportContent report={report} analysis={analysis} /> : status ? <ReportLoading loadingStatus={status} /> : <ReportSearch />}
                 </Box>
             </Box>
         </>

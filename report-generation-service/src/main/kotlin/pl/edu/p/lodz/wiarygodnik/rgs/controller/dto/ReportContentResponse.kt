@@ -2,6 +2,7 @@ package pl.edu.p.lodz.wiarygodnik.rgs.controller.dto
 
 import pl.edu.p.lodz.wiarygodnik.rgs.model.CredibilityLevel
 import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
+import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus
 
 data class ReportContentResponse(
     val requestId: String,

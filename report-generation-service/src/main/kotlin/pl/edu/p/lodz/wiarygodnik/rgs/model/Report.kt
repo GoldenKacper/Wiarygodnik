@@ -2,7 +2,7 @@ package pl.edu.p.lodz.wiarygodnik.rgs.model
 
 import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 
 enum class ReportStatus {
@@ -22,7 +22,7 @@ class Report(
     var sourceUrl: String,
     @Enumerated(EnumType.STRING) var status: ReportStatus,
     var title: String = "Not generated yet",
-    @Enumerated(EnumType.STRING) var credibilityLevel: CredibilityLevel,
+    @Enumerated(EnumType.STRING) var credibilityLevel: CredibilityLevel = CredibilityLevel.LOW,
     @Lob @Column(columnDefinition = "TEXT") var content: String = "Not generated yet",
     @OneToMany(
         cascade = [CascadeType.ALL],
@@ -31,17 +31,18 @@ class Report(
 ) {
 
     companion object {
-        fun fromAnalysisResult(analysisResult: AnalysisResult): Report {
+        fun fromAnalysisResult(analysisResult: AnalysisResultMessage): Report {
             val initialReport = Report(
                 requestId = analysisResult.requestId,
                 userId = analysisResult.userId,
                 sourceUrl = analysisResult.sourceUrl,
-                credibilityLevel = CredibilityLevel.MEDIUM,
                 status = ReportStatus.GENERATING
             )
-            initialReport.similarSources = analysisResult.contentComparison.sourcesFacts
-                .map { SimilarSource(sourceUrl = it.url, report = initialReport) }
-                .toMutableList()
+            analysisResult.contentComparison?.let { contentComparison ->
+                initialReport.similarSources = contentComparison.sourcesFacts
+                    .map { SimilarSource(sourceUrl = it.url, report = initialReport) }
+                    .toMutableList()
+            }
             return initialReport
         }
     }
@@ -49,6 +50,7 @@ class Report(
     fun fillWithGeneratedContent(reportGenerationResult: ReportGenerationResult) {
         this.title = reportGenerationResult.title
         this.content = reportGenerationResult.content
+        this.credibilityLevel = reportGenerationResult.credibilityLevel
         this.status = ReportStatus.GENERATED
     }
 

@@ -4,7 +4,7 @@ import { useReportApi, type ReportStatusResponse } from '../api/report.api';
 import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
 
 export const useAnalysisStatus = (requestId: string | undefined) => {
-    const { getAnalysisStatus } = useAnalysisApi();
+    const { getMyAnalysisStatus } = useAnalysisApi();
     const { getMyReportStatus } = useReportApi();
     
     const [status, setStatus] = useState<string | undefined>(undefined);
@@ -22,7 +22,7 @@ export const useAnalysisStatus = (requestId: string | undefined) => {
             let analysisCompleted: boolean = false;
             while (active) {
                 if (!analysisCompleted) {
-                    const res: AnalysisStatusResponse = await getAnalysisStatus(requestId);
+                    const res: AnalysisStatusResponse = await getMyAnalysisStatus(requestId);
                     setStatus(res.status);
                     if (res.status === AnalysisStatus.COMPLETED) {
                         analysisCompleted = true;

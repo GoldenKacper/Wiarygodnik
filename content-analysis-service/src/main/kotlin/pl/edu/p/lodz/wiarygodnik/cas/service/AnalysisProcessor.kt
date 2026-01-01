@@ -7,20 +7,16 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
 import pl.edu.p.lodz.wiarygodnik.cas.amqp.RabbitMQProducer
-import pl.edu.p.lodz.wiarygodnik.cas.model.AnalysisEntity
-import pl.edu.p.lodz.wiarygodnik.cas.model.AnalysisStatus
+import pl.edu.p.lodz.wiarygodnik.cas.model.Analysis
 import pl.edu.p.lodz.wiarygodnik.cas.model.AnalysisStatus.*
-import pl.edu.p.lodz.wiarygodnik.cas.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.cas.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentAnalysis
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentComparison
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ScrapedWebContent
-import pl.edu.p.lodz.wiarygodnik.cas.repository.AnalysisRepository
-import pl.edu.p.lodz.wiarygodnik.cas.security.PrincipalProvider
 import pl.edu.p.lodz.wiarygodnik.cas.service.analyser.ContentAnalyser
 import pl.edu.p.lodz.wiarygodnik.cas.service.comparator.ContentComparator
 import pl.edu.p.lodz.wiarygodnik.cas.service.scraper.WebScraper
 import pl.edu.p.lodz.wiarygodnik.cas.service.searcher.KeywordWebSearcher
-import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 @Component
@@ -29,7 +25,7 @@ class AnalysisProcessor(
     private val contentAnalyzer: ContentAnalyser,
     private val keywordWebSearcher: KeywordWebSearcher,
     private val contentComparator: ContentComparator,
-    private val analysisRepository: AnalysisRepository,
+    private val analysisService: AnalysisService,
     private val producer: RabbitMQProducer
 ) : CoroutineScope {
 
@@ -37,58 +33,79 @@ class AnalysisProcessor(
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
 
-    fun analyse(url: String): AnalysisEntity {
-        val analysisEntity = prepareNewAnalysis(url)
-        val persistedAnalysis = analysisRepository.save(analysisEntity)
-
+    fun analyse(url: String): Analysis {
+        val persistedAnalysis = analysisService.initializeAnalysis(url)
         asyncProcessAnalysis(persistedAnalysis)
-
         return persistedAnalysis
     }
 
-    private fun prepareNewAnalysis(url: String) =
-        AnalysisEntity(
-            requestId = UUID.randomUUID().toString(),
-            userId = PrincipalProvider.getCurrentUserId(),
-            sourceUrl = url,
-            status = ANALYSING_CONTENT
-        )
-
-    private fun asyncProcessAnalysis(analysisEntity: AnalysisEntity) = launch {
+    private fun asyncProcessAnalysis(analysis: Analysis) = launch {
         try {
-            log.info { "Analysis for url: ${analysisEntity.sourceUrl} process started. [analysisId: ${analysisEntity.id}, requestId: ${analysisEntity.requestId}]" }
+            log.info { "Analysis for url: ${analysis.sourceUrl} process started. [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+            val contentAnalysis: ContentAnalysis = analyseContent(analysis)
+            analysis.fillWith(contentAnalysis)
 
-            val scrapedWebContent: ScrapedWebContent = webScraper.scrape(analysisEntity.sourceUrl)
-            log.info { "Analysing content of scraped web page. [analysisId: ${analysisEntity.id}, requestId: ${analysisEntity.requestId}]" }
-            val analysis: ContentAnalysis = contentAnalyzer.analyse(scrapedWebContent.text)
+            analysis.status = COMPARING_SIMILAR_SOURCES
+            val updatedAnalysis: Analysis = analysisService.update(analysis)
 
-            switchAnalysisStatus(analysisEntity, COMPARING_SIMILAR_SOURCES)
-            log.info { "Comparing content of similar web pages. [analysisId: ${analysisEntity.id}, requestId: ${analysisEntity.requestId}]" }
-            val topSimilarUrls: List<String> = keywordWebSearcher.searchTopUrls(analysis.summarization.keywords)
-            val scrapedSimilarWebContents: List<ScrapedWebContent> = topSimilarUrls.map { webScraper.scrape(it) }
-            val comparison: ContentComparison = contentComparator.compare(
-                analysis.summarization.description, scrapedSimilarWebContents
-            )
-            switchAnalysisStatus(analysisEntity, COMPLETED)
+            val contentComparison: ContentComparison? = compareSimilarSources(updatedAnalysis, contentAnalysis)
+            contentComparison?.let { updatedAnalysis.fillWith(it) }
 
-            val result = AnalysisResult(
-                analysisEntity.requestId,
-                analysisEntity.userId,
-                analysisEntity.sourceUrl,
-                analysis,
-                comparison
-            )
-            log.info { "Analysis process finished. Sending result for report generation. [analysisId: ${analysisEntity.id}, requestId: ${analysisEntity.requestId}]" }
-            producer.sendAnalysis(result)
+            updatedAnalysis.status = COMPLETED
+            analysisService.update(updatedAnalysis)
+            log.info { "Analysis process finished. [analysisId: ${updatedAnalysis.id}, requestId: ${updatedAnalysis.requestId}]" }
+
+            sendAnalysisResult(updatedAnalysis, contentAnalysis, contentComparison)
         } catch (e: Exception) {
-            log.error { "Error while analysing content [analysisId: ${analysisEntity.id}, requestId: ${analysisEntity.requestId}]: $e" }
-            switchAnalysisStatus(analysisEntity, FAILED)
+            log.error { "Error while analysing content [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]: $e" }
+            analysis.status = FAILED
+            analysisService.updateStatus(analysis.requestId, FAILED)
         }
     }
 
-    private fun switchAnalysisStatus(analysis: AnalysisEntity, status: AnalysisStatus) {
-        analysis.status = status
-        analysisRepository.save(analysis)
+    private fun analyseContent(analysis: Analysis): ContentAnalysis {
+        log.info { "Scraping source web page. [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+        val scrapedWebContent: ScrapedWebContent = webScraper.scrape(analysis.sourceUrl)
+
+        log.info { "Analysing content of scraped web page. [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+        val contentAnalysis: ContentAnalysis = contentAnalyzer.analyse(scrapedWebContent.text)
+
+        return contentAnalysis
+    }
+
+    private fun compareSimilarSources(analysis: Analysis, contentAnalysis: ContentAnalysis): ContentComparison? {
+        log.info { "Searching for top matching urls to the keywords. [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+        val topSimilarUrls: List<String> = keywordWebSearcher.searchTopUrls(contentAnalysis.summarization.keywords)
+
+        log.info { "Scraping top matched urls [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+        val scrapedSimilarWebContents: List<ScrapedWebContent> = topSimilarUrls
+            .map { webScraper.scrape(it) }
+            .filter { it.text.isNotBlank() }
+
+        if (scrapedSimilarWebContents.isEmpty()) {
+            log.info { "No valid matched sources were found [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+            return null
+        }
+
+        log.info { "Comparing top matched sources [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+        val contentComparison: ContentComparison = contentComparator.compare(
+            contentAnalysis.summarization.description, scrapedSimilarWebContents
+        )
+
+        return contentComparison
+    }
+
+    private fun sendAnalysisResult(
+        analysis: Analysis,
+        contentAnalysis: ContentAnalysis,
+        contentComparison: ContentComparison?
+    ) {
+        val result = AnalysisResultMessage(
+            analysis.requestId, analysis.userId, analysis.sourceUrl,
+            contentAnalysis, contentComparison
+        )
+        log.info { "Sending result for report generation. [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
+        producer.sendAnalysis(result)
     }
 
 }
