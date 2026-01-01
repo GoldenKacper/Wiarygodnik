@@ -27,20 +27,16 @@ export const ReportContent = ({ report, analysis }: ReportContentProps) => {
         return <></>;
     }
 
-    const analyzedSource = report.sourceUrl;
-    const similarSourceUrls = report.similarSourceUrls;
-    const reportTitle = report.title;
-    const reportContent = report.content;
-    const reportCreadabilityLevel = report.credibilityLevel;
+    const similarSourceUrls = analysis.contentComparison.sourcesFacts.map(sourceFact => sourceFact.url);
 
     return (
         <Box sx={{ display: "flex", flexDirection: isMobile ? "column" : "row", flex: 1, paddingBottom: "10px", gap: isMobile ? 0 : 4 }}>
-            <Box sx={{ display: "flex", maxHeight: isMobile ? "calc(50vh - 100px)" : "calc(100vh - 210px)", flexDirection: "column", flex: 1, gap: 2, overflowY: "auto", overflowX: "hidden" }}>
+            <Box sx={{ display: "flex", maxHeight: isMobile ? "calc(50vh - 100px)" : "calc(100vh - 210px)", flexDirection: "column", flex: 1, gap: 2 }}>
                 <Box sx={{ backgroundColor: theme.palette.background.paper, borderRadius: "15px", padding: "10px" }}>
-                    <ReportCredability creadability={reportCreadabilityLevel} />
+                    <ReportCredability creadability={report.credibilityLevel} />
                 </Box>
                 <Box sx={{ backgroundColor: theme.palette.background.paper, borderRadius: "15px", padding: "10px" }}>
-                    <Typography sx={{ fontWeight: "bold", fontSize: "1.8rem" }}>{reportTitle}</Typography>
+                    <Typography sx={{ fontWeight: "bold", fontSize: "1.8rem" }}>{report.title}</Typography>
                 </Box>
                 <Box sx={{ backgroundColor: theme.palette.background.paper, borderRadius: "15px", padding: "10px" }}>
                     <Typography sx={{ display: "flex", fontWeight: "bold", fontSize: "1.2rem" }}>
@@ -49,8 +45,8 @@ export const ReportContent = ({ report, analysis }: ReportContentProps) => {
                     </Typography>
                     <Typography sx={{ display: "flex", alignItems: "flex-start", alignSelf: "center", marginTop: "5px", fontWeight: "light" }}>
                         <CircleIcon sx={sourceDot} />
-                        <Link target="_blank" href={analyzedSource} sx={sourceLink}>
-                            {getDomain(analyzedSource)}
+                        <Link target="_blank" href={report.sourceUrl} sx={sourceLink}>
+                            {getDomain(report.sourceUrl)}
                         </Link>
                     </Typography>
                 </Box>
@@ -71,8 +67,8 @@ export const ReportContent = ({ report, analysis }: ReportContentProps) => {
                     }
                 </Box>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column", maxHeight: isMobile ? "calc(50vh - 100px)" : "calc(100vh - 210px)", flex: 2, gap: 2, mt: 3 }}>
-                <ReportPart content={reportContent} />
+            <Box sx={{ display: "flex", flexDirection: "column", flex: 2, gap: 2, mt: 3 }}>
+                <ReportPart content={report.content} />
                 <ContentSummaryPart contentSummary={analysis.contentAnalysis.summarization} />
                 <SentimentAnalysisPart sentimentAnalysis={analysis.contentAnalysis.sentiment} />
                 {analysis.contentComparison && <ContentComparisonPart contentComparison={analysis.contentComparison} />}
