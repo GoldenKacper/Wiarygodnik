@@ -118,7 +118,6 @@ services:
       KEYCLOAK_ADMIN: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HTTP_PORT: 8888
-#      KC_HOSTNAME: keycloak
     command:
       - start-dev
       - --import-realm
