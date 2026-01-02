@@ -19,15 +19,11 @@ class Report(
     @Version var version: Long = 0,
     var requestId: String,
     var userId: String,
-    var sourceUrl: String,
+    @Column(columnDefinition = "TEXT") var sourceUrl: String,
     @Enumerated(EnumType.STRING) var status: ReportStatus,
     var title: String = "Not generated yet",
     @Enumerated(EnumType.STRING) var credibilityLevel: CredibilityLevel = CredibilityLevel.LOW,
-    @Lob @Column(columnDefinition = "TEXT") var content: String = "Not generated yet",
-    @OneToMany(
-        cascade = [CascadeType.ALL],
-        mappedBy = "report"
-    ) var similarSources: MutableList<SimilarSource> = ArrayList()
+    @Column(columnDefinition = "TEXT") var content: String = "Not generated yet"
 ) {
 
     companion object {
@@ -38,11 +34,6 @@ class Report(
                 sourceUrl = analysisResult.sourceUrl,
                 status = ReportStatus.GENERATING
             )
-            analysisResult.contentComparison?.let { contentComparison ->
-                initialReport.similarSources = contentComparison.sourcesFacts
-                    .map { SimilarSource(sourceUrl = it.url, report = initialReport) }
-                    .toMutableList()
-            }
             return initialReport
         }
     }

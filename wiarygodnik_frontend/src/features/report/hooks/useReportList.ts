@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useReportApi, type ReportListItemResponse } from '../api/report.api';
 
-export const useReportsList = () => {
+export const useReportsList = (reload: boolean | undefined) => {
   const { getAllMyReports } = useReportApi();
   
   const [reports, setReports] = useState<ReportListItemResponse[]>([]);
@@ -11,7 +11,7 @@ export const useReportsList = () => {
     getAllMyReports()
       .then(setReports)
       .finally(() => setLoading(false));
-  }, []);
+  }, [reload]);
 
   return { reports, loading };
 };

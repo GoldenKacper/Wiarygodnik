@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 class SourceSummary(
-    @OneToOne val analysis: Analysis,
+    @OneToOne(mappedBy = "sourceSummary") val analysis: Analysis,
     @Column(columnDefinition = "TEXT") val summary: String,
     @ElementCollection @CollectionTable(name = "source_keywords") val keywords: Set<String> = mutableSetOf(),
     @Id @GeneratedValue val id: Long? = null

@@ -25,7 +25,7 @@ class ReportController(val reportService: ReportService) {
 
     @GetMapping("/{requestId}")
     fun getMyReport(@PathVariable requestId: String): ResponseEntity<ReportContentResponse> {
-        val report: Report = reportService.findReportByRequestId(requestId)
+        val report: Report = reportService.findGeneratedReportByRequestId(requestId)
         val response = ReportContentResponse.from(report)
         return ResponseEntity.ok(response)
     }

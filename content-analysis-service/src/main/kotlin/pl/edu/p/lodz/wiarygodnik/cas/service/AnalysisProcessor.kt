@@ -80,6 +80,7 @@ class AnalysisProcessor(
         log.info { "Scraping top matched urls [analysisId: ${analysis.id}, requestId: ${analysis.requestId}]" }
         val scrapedSimilarWebContents: List<ScrapedWebContent> = topSimilarUrls
             .map { webScraper.scrape(it) }
+            .filter { it.url != analysis.sourceUrl }
             .filter { it.text.isNotBlank() }
 
         if (scrapedSimilarWebContents.isEmpty()) {

@@ -35,7 +35,7 @@ function Reports() {
         <>
             <NavBar menuActive={menuActive} setMenuActive={setMenuActive} />
             <Box sx={{ display: "flex" }}>
-                {menuActive && <ReportList />}
+                {menuActive && <ReportList reload={!!report} />}
                 <Box sx={{ display: "flex", flexDirection: "column", width: isMobile ? "100%" : "80%", height: "calc(100vh - 100px)", padding: "10px", margin: "auto" }}>
                     {report && analysis ? <ReportContent report={report} analysis={analysis} /> : status ? <ReportLoading loadingStatus={status} /> : <ReportSearch />}
                 </Box>

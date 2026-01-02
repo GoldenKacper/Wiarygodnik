@@ -9,8 +9,7 @@ data class ReportContentResponse(
     val sourceUrl: String,
     val title: String,
     val credibilityLevel: CredibilityLevel,
-    val content: String,
-    val similarSourceUrls: List<String>
+    val content: String
 ) {
     companion object {
         fun from(report: Report): ReportContentResponse {
@@ -19,8 +18,7 @@ data class ReportContentResponse(
                 sourceUrl = report.sourceUrl,
                 title = report.title,
                 credibilityLevel = report.credibilityLevel,
-                content = report.content,
-                similarSourceUrls = report.similarSources.map { it.sourceUrl }
+                content = report.content
             )
         }
     }

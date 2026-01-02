@@ -6,7 +6,7 @@ import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
 export const useAnalysisStatus = (requestId: string | undefined) => {
     const { getMyAnalysisStatus } = useAnalysisApi();
     const { getMyReportStatus } = useReportApi();
-    
+
     const [status, setStatus] = useState<string | undefined>(undefined);
 
     useEffect(() => {
@@ -30,12 +30,19 @@ export const useAnalysisStatus = (requestId: string | undefined) => {
                         break;
                     }
                 } else {
-                    const reportRes: ReportStatusResponse = await getMyReportStatus(requestId);
-                    setStatus(reportRes.status);
-                    if (reportRes.status === AnalysisStatus.GENERATED) {
-                        break;
-                    } else if (reportRes.status === AnalysisStatus.FAILED) {
-                        break;
+                    try {
+                        const reportRes: ReportStatusResponse = await getMyReportStatus(requestId);
+                        setStatus(reportRes.status);
+
+                        if (reportRes.status === AnalysisStatus.GENERATED) {
+                            break;
+                        } else if (reportRes.status === AnalysisStatus.FAILED) {
+                            break;
+                        }
+                    } catch (err: any) {
+                        if (err.response?.status !== 404) {
+                            break;
+                        }
                     }
                 }
 

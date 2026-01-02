@@ -1,27 +1,31 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.security
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import pl.edu.p.lodz.wiarygodnik.rgs.config.CorsProperties
 
 @Configuration
-class CorsConfig {
+@EnableConfigurationProperties(CorsProperties::class)
+class CorsConfig(private val corsProperties: CorsProperties) {
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:5173")
-        configuration.allowedMethods = listOf("*")
-        configuration.allowedHeaders = listOf("*")
-        configuration.exposedHeaders = listOf("*")
-        configuration.allowCredentials = true
-        configuration.maxAge = 3600L
+        val configuration = CorsConfiguration().apply {
+            allowedOrigins = corsProperties.allowedOrigins
+            allowedMethods = corsProperties.allowedMethods
+            allowedHeaders = corsProperties.allowedHeaders
+            exposedHeaders = corsProperties.exposedHeaders
+            allowCredentials = corsProperties.allowCredentials
+            maxAge = corsProperties.maxAge
+        }
 
-        val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
-        return source
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", configuration)
+        }
     }
 
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 class ComparisonSummary(
-    @OneToOne val analysis: Analysis,
+    @OneToOne(mappedBy = "comparisonSummary") val analysis: Analysis,
     @Column(columnDefinition = "TEXT") val summary: String,
     @OneToMany(
         mappedBy = "comparisonSummary",

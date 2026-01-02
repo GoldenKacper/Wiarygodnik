@@ -7,13 +7,15 @@ import { ReportListButton } from "./ReportListButton.tsx";
 import { useReportsList } from "../hooks/useReportList.ts";
 import { NewReportButton } from "./NewReportButton.tsx";
 
+interface ReportListProps {
+    reload?: boolean;
+}
 
-export const ReportList = () => {
+export const ReportList = ({ reload }: ReportListProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const { reports, loading } = useReportsList();
-
+    const { reports, loading } = useReportsList(reload);
     return (
         <Box sx={{
             width: isMobile ? "100vw" : "280px",

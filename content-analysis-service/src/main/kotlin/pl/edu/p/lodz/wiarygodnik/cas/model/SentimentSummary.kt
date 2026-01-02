@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 class SentimentSummary(
-    @OneToOne val analysis: Analysis,
+    @OneToOne(mappedBy = "sentimentSummary") val analysis: Analysis,
     @Column(columnDefinition = "TEXT") val summary: String,
     @OneToMany(
         mappedBy = "sentimentSummary",

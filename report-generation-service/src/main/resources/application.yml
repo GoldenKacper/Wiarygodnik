@@ -21,6 +21,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations:
+        - classpath:initial-db/report.sql
 
   ai:
     ollama:
@@ -30,6 +36,22 @@ spring:
 
 server:
   port: 8082
+
+cors:
+  allowed-origins:
+    - http://localhost:5173
+    - http://localhost
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+  allowed-headers:
+    - "*"
+  exposed-headers:
+    - "*"
+  allow-credentials: true
+  max-age: 3600
 
 logging:
   logstash:

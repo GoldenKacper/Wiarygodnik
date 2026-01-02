@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 import pl.edu.p.lodz.wiarygodnik.rgs.amqp.RabbitMQConfig.Companion.ANALYSIS_RESULTS_QUEUE
+import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.service.ReportService
 
@@ -15,7 +16,8 @@ class RabbitMQConsumer(private val reportService: ReportService) {
     @RabbitListener(queues = [ANALYSIS_RESULTS_QUEUE])
     fun contentAnalysisServiceResultsQueue(message: AnalysisResultMessage) {
         log.info { "Received message: $message" }
-        reportService.createReport(message)
+        val initialReport: Report = reportService.initializeReport(message)
+        reportService.generateReportContent(initialReport, message)
     }
 
 }

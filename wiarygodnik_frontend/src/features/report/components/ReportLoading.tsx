@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import theme from "../../../theme";
-import { mapAnalysisStatus } from "../lib/AnalysisStatusMapper";
+import { mapAnalysisStatus } from "../lib/analysisStatusMapper";
 
 interface ReportLoadingProps {
     loadingStatus?: string;
