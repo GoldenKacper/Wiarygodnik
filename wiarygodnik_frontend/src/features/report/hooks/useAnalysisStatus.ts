@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { useAnalysisApi, type AnalysisStatusResponse } from '../api/analysis.api';
 import { useReportApi, type ReportStatusResponse } from '../api/report.api';
 import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
+import { useOnlineStatus } from '../../../hooks/useOnlineStatus.ts';
 
 export const useAnalysisStatus = (requestId: string | undefined) => {
+    const online = useOnlineStatus()
+
     const { getMyAnalysisStatus } = useAnalysisApi();
     const { getMyReportStatus } = useReportApi();
 
@@ -58,7 +61,7 @@ export const useAnalysisStatus = (requestId: string | undefined) => {
         return () => {
             active = false;
         };
-    }, [requestId]);
+    }, [requestId, online]);
 
     return status;
 };

@@ -15,7 +15,7 @@ enum class CredibilityLevel {
 
 @Entity
 class Report(
-    @Id @GeneratedValue(strategy = IDENTITY) var id: Long = 0,
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE) var id: Long = 0,
     @Version var version: Long = 0,
     var requestId: String,
     var userId: String,

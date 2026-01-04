@@ -1,6 +1,6 @@
 import { Box, Typography, Link } from "@mui/material";
 import type { ContentComparison } from "../api/analysis.api";
-import { getDomain } from "../../../lib/domainExtractor";
+import { getDomain } from "../lib/domainExtractor";
 
 interface ContentComparisonPartProps {
   contentComparison: ContentComparison;

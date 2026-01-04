@@ -1,8 +1,11 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.service
 
+import com.fasterxml.jackson.core.JsonParseException
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.model.ChatModel
 import org.springframework.core.io.ResourceLoader
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
@@ -12,6 +15,11 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
 
     private val chatClient = ChatClient.create(chatModel)
 
+    @Retryable(
+        value = [JsonParseException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delay = 0)
+    )
     fun generate(input: AnalysisResultMessage): ReportGenerationResult {
         val analysisReportGenerationPrompt: String = prepareAnalysisReportGenerationPrompt(input)
         return callChatGeneration(analysisReportGenerationPrompt)

@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useReportApi, type ReportContentResponse } from '../api/report.api';
 import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
+import { useOnlineStatus } from '../../../hooks/useOnlineStatus.ts';
 
 export const useReport = (requestId: string | undefined, status: string | undefined) => {
+  const online = useOnlineStatus()
+
   const { getMyReport } = useReportApi();
   
   const [report, setReport] = useState<ReportContentResponse | undefined>(undefined);
@@ -14,7 +17,7 @@ export const useReport = (requestId: string | undefined, status: string | undefi
     }
 
     getMyReport(requestId).then(setReport);
-  }, [requestId, status]);
+  }, [requestId, status, online]);
 
   return report;
 };

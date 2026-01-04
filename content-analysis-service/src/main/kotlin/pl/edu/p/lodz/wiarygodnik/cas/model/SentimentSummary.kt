@@ -1,6 +1,7 @@
 package pl.edu.p.lodz.wiarygodnik.cas.model
 
 import jakarta.persistence.*
+import jakarta.persistence.GenerationType.SEQUENCE
 
 @Entity
 class SentimentSummary(
@@ -10,5 +11,5 @@ class SentimentSummary(
         mappedBy = "sentimentSummary",
         cascade = [CascadeType.ALL]
     ) var examples: MutableList<SentimentExample> = ArrayList(),
-    @Id @GeneratedValue val id: Long? = null
+    @Id @GeneratedValue(strategy = SEQUENCE) val id: Long? = null
 )

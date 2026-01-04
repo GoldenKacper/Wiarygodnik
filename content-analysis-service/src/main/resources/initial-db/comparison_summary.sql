@@ -1,3 +1,5 @@
 INSERT INTO public.comparison_summary (id, summary) VALUES (1, 'Większość podobnych źródeł potwierdza główne informacje z głównego źródła, zwłaszcza dotyczące codziennego przyjmowania 325 mg aspiryny i dążenia do "ładnej, rzadkiej" krwi, z jedynie jednym źródłem dodającym dodatkową przyczynę siniaków.');
 INSERT INTO public.comparison_summary (id, summary) VALUES (2, 'Wszystkie podobne źródła potwierdzają ogłoszenie narodzin czwartego dziecka przez Annę Kournikovu i Enrique Iglesias, opisując rodzinne zdjęcie i celebrację. Nie ma sprzeczności, a dodatkowo podkreślają, że dziecko przyszło tuż przed świętami.');
 INSERT INTO public.comparison_summary (id, summary) VALUES (5, 'Podobne źródła w większości przeczą głównemu źródłu, twierdząc, że Viki Gabor jest żoną Giovanniego Trojanek, zamiast być tylko narzeczoną, choć jedno z nich potwierdza, że jest w związku, lecz z innym partnerem.');
+
+SELECT setval('comparison_summary_seq', (SELECT MAX(id) FROM public.comparison_summary));

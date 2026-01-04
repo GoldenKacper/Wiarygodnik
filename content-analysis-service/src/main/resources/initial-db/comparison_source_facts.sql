@@ -9,3 +9,5 @@ INSERT INTO public.comparison_source_facts (comparison_summary_id, id, source_ur
 INSERT INTO public.comparison_source_facts (comparison_summary_id, id, source_url) VALUES (5, 16, 'https://www.instagram.com/reel/DSxwISCDItJ/');
 INSERT INTO public.comparison_source_facts (comparison_summary_id, id, source_url) VALUES (5, 17, 'https://www.instagram.com/p/DSx6ZhKiKK8/');
 INSERT INTO public.comparison_source_facts (comparison_summary_id, id, source_url) VALUES (5, 18, 'https://www.youtube.com/watch?v=BJsyIThFaFU');
+
+SELECT setval('comparison_source_facts_seq', (SELECT MAX(id) FROM public.comparison_source_facts));

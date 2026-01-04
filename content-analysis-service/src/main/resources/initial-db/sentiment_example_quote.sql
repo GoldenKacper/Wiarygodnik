@@ -10,3 +10,5 @@ INSERT INTO public.sentiment_example_quote (id, sentiment_example_id, explanatio
 INSERT INTO public.sentiment_example_quote (id, sentiment_example_id, explanation, quote) VALUES (16, 13, 'Wypowiedź wyraża radość i ekscytację z nowego etapu życia, co stanowi przykład nacechowania pozytywnego.', 'Tak, zaręczyłam się i jestem mega happy');
 INSERT INTO public.sentiment_example_quote (id, sentiment_example_id, explanation, quote) VALUES (17, 14, 'Twardy, krytyczny ton i bezpośrednie oskarżenie wobec komentatorów wskazują na nacechowanie agresywne.', 'NIE MACIE GUSTU!');
 INSERT INTO public.sentiment_example_quote (id, sentiment_example_id, explanation, quote) VALUES (18, 15, 'Opisanie reakcji z przśmiewczą miną sugeruje lekki, satyryczny ton, co można zakwalifikować jako ironię.', 'Moja reakcja na wasze tiktoki - podpisała zdjęcie z przśmiewczą miną');
+
+SELECT setval('sentiment_example_quote_seq', (SELECT MAX(id) FROM public.sentiment_example_quote));

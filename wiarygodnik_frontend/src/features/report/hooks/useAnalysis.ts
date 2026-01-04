@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { AnalysisStatus } from "../domain/AnalysisStatus.ts";
 import { useAnalysisApi, type AnalysisData  } from '../api/analysis.api.ts';
+import { useOnlineStatus } from '../../../hooks/useOnlineStatus.ts';
 
 export const useAnalysis = (requestId: string | undefined, status: string | undefined) => {
+  const online = useOnlineStatus()
+
   const { getMyAnalysis } = useAnalysisApi();
   
   const [analysis, setAnalysis] = useState<AnalysisData | undefined>(undefined);
@@ -14,7 +17,7 @@ export const useAnalysis = (requestId: string | undefined, status: string | unde
     }
 
     getMyAnalysis(requestId).then(setAnalysis);
-  }, [requestId, status]);
+  }, [requestId, status, online]);
 
   return analysis;
 };

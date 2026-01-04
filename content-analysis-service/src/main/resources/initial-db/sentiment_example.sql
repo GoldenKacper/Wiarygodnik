@@ -7,3 +7,5 @@ INSERT INTO public.sentiment_example (id, sentiment_summary_id, sentiment) VALUE
 INSERT INTO public.sentiment_example (id, sentiment_summary_id, sentiment) VALUES (13, 5, 'POSITIVE');
 INSERT INTO public.sentiment_example (id, sentiment_summary_id, sentiment) VALUES (14, 5, 'AGGRESSIVE');
 INSERT INTO public.sentiment_example (id, sentiment_summary_id, sentiment) VALUES (15, 5, 'IRONIC');
+
+SELECT setval('sentiment_example_seq', (SELECT MAX(id) FROM public.sentiment_example));

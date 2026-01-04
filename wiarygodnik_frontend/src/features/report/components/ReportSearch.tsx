@@ -4,8 +4,11 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAnalyseSource } from "../hooks/useAnalyseSource.ts";
+import { useOnlineStatus } from "../../../hooks/useOnlineStatus.ts";
+import { enqueueSnackbar } from "notistack";
 
 export const ReportSearch = () => {
+    const online = useOnlineStatus()
     const navigate = useNavigate();
 
     const { startAnalysis } = useAnalyseSource();
@@ -14,8 +17,16 @@ export const ReportSearch = () => {
 
     const handleSearch = async () => {
         navigator.vibrate?.(200);
-        const requestId = await startAnalysis(sourceUrl);
-        navigate(`/reports/${requestId}`);
+        try {
+            const requestId = await startAnalysis(sourceUrl);
+            navigate(`/reports/${requestId}`);
+        } catch (e) {
+            if (!online) {
+                enqueueSnackbar("Brak połączenia z internetem. Analiza zostanie rozpoczęta automatycznie po przywróceniu połączenia.", { variant: 'success' });
+                return;
+            }
+            return;
+        }
     };
 
     return (

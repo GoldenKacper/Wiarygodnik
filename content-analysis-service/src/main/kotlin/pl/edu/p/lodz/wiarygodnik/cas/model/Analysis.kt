@@ -1,7 +1,7 @@
 package pl.edu.p.lodz.wiarygodnik.cas.model
 
 import jakarta.persistence.*
-import jakarta.persistence.GenerationType.IDENTITY
+import jakarta.persistence.GenerationType.SEQUENCE
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentAnalysis
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentComparison
 
@@ -18,7 +18,7 @@ class Analysis(
     @OneToOne(cascade = [CascadeType.ALL]) var sourceSummary: SourceSummary? = null,
     @OneToOne(cascade = [CascadeType.ALL]) var sentimentSummary: SentimentSummary? = null,
     @OneToOne(cascade = [CascadeType.ALL]) var comparisonSummary: ComparisonSummary? = null,
-    @Id @GeneratedValue(strategy = IDENTITY) var id: Long? = null
+    @Id @GeneratedValue(strategy = SEQUENCE) var id: Long? = null
 ) {
 
     fun fillWith(contentAnalysis: ContentAnalysis) {
