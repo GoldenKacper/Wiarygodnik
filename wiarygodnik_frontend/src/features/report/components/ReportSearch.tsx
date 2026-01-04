@@ -22,7 +22,7 @@ export const ReportSearch = () => {
             navigate(`/reports/${requestId}`);
         } catch (e) {
             if (!online) {
-                enqueueSnackbar("Brak połączenia z internetem. Analiza zostanie rozpoczęta automatycznie po przywróceniu połączenia.", { variant: 'success' });
+                enqueueSnackbar("Analiza zostanie rozpoczęta automatycznie po przywróceniu połączenia.", { variant: 'success' });
                 return;
             }
             return;

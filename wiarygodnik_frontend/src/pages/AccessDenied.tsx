@@ -15,7 +15,7 @@ export default function AccessDenied() {
                             lg: "3.5rem"
                         },
                     }}>
-                    Access Denied
+                    Brak dostępu
                 </Typography>
                 <Typography sx={{
                     fontSize: {
@@ -25,7 +25,7 @@ export default function AccessDenied() {
                         lg: "1.3rem"
                     },
                 }}>
-                    You do not have permission to view this page.
+                    Nie posiadasz uprawnień do wyświetlenia tego zasobu.
                 </Typography>
             </Box>
         </Container>
