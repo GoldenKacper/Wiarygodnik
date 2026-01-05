@@ -91,8 +91,6 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
     useEffect(() => {
         if (!keycloak || !online) return;
 
-        console.log(online);
-
         initOnline(keycloak, setAuthenticated)
             .catch(() => setAuthenticated(false));
     }, [online]);

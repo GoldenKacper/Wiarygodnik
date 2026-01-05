@@ -50,6 +50,9 @@ cors:
     - http://localhost:5173
     - http://localhost:4173
     - http://localhost
+    - https://localhost:5173
+    - https://localhost:4173
+    - https://localhost
   allowed-methods:
     - GET
     - POST

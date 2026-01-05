@@ -19,6 +19,7 @@ class SecurityConfig {
             csrf { disable() }
             authorizeHttpRequests {
                 authorize("/api/report/**", hasRole("USER"))
+                authorize("/api/push/**", hasRole("USER"))
             }
             oauth2ResourceServer {
                 jwt {

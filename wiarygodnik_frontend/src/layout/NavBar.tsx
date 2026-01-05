@@ -17,6 +17,7 @@ function NavBar(props: NavBarProps) {
     const isMobile = useIsMobile();
     const navigate = useNavigate();
     const location = useLocation();
+
     const { authenticated } = useKeycloak();
 
     function handleHome() {
@@ -45,7 +46,7 @@ function NavBar(props: NavBarProps) {
                 alignItems: "center",
                 px: isMobile ? 0 : 4
             }}>
-                <Box sx={{ justifySelf: "start", width: "70px" }}>
+                <Box sx={{ justifySelf: "start" }}>
                     {authenticated ?
                         location.pathname.startsWith("/reports") ? (
                             <Tooltip title="Ukryj/Pokaż listę raportów">
@@ -73,7 +74,7 @@ function NavBar(props: NavBarProps) {
                     </Button>
                 </Box>
 
-                <Box sx={{ justifySelf: "end", width: "70px" }}>
+                <Box sx={{ display: "flex", justifySelf: "end" }}>
                     {authenticated && location.pathname !== "/user" ? (
                         <Tooltip title="Przejdź do konta">
                             <Button aria-label={"account-button"} onClick={handleUserClick}>

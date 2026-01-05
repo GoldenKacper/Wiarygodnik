@@ -1,6 +1,7 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
 import org.springframework.transaction.annotation.Transactional
@@ -12,11 +13,14 @@ import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 import pl.edu.p.lodz.wiarygodnik.rgs.repo.ReportRepository
 import pl.edu.p.lodz.wiarygodnik.rgs.security.PrincipalProvider
+import pl.edu.p.lodz.wiarygodnik.rgs.service.notifications.PushNotificationService
+import pl.edu.p.lodz.wiarygodnik.rgs.service.notifications.ReportGeneratedEvent
 
 @Service
 class ReportService(
     private val analysisReportGenerator: AiAnalysisReportGenerator,
-    private val reportRepository: ReportRepository
+    private val reportRepository: ReportRepository,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -37,6 +41,7 @@ class ReportService(
             report.fillWithGeneratedContent(reportGenerationResult)
             reportRepository.save(report)
             log.info { "Report generated successfully and persisted to database [reportId: ${report.id}], requestId: ${analysisResult.requestId}" }
+            eventPublisher.publishEvent(ReportGeneratedEvent(report.userId, report.requestId))
         } catch (e: Exception) {
             log.error(e) { "Generating report failed" }
             report.status = FAILED

@@ -1,9 +1,9 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    kotlin("plugin.jpa") version "1.9.25"
     id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "1.9.25"
     id("org.sonarqube") version "5.0.0.4638"
 }
 
@@ -38,6 +38,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+
+    implementation("nl.martijndwars:web-push:5.1.2")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.83")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
+    implementation("org.apache.httpcomponents:httpcore:4.4.16")
 
     runtimeOnly("org.postgresql:postgresql")
 

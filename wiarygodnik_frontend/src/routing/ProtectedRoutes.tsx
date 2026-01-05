@@ -14,8 +14,6 @@ const ProtectedRoutes: React.FC<ProtectedRouteProps> = ({ roles }) => {
     const online = useOnlineStatus()
     const { keycloak, authenticated } = useKeycloak();
 
-    console.log("online: " + online + "authenticated: " + authenticated);
-
     if (!authenticated && !online) {
         return <ConnectionRequired />
     } else if (!keycloak) {

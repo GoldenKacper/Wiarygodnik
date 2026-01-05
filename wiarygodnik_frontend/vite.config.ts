@@ -1,51 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
     react(),
+    mkcert(),
     VitePWA({
+      devOptions: { enabled: true },
       registerType: 'autoUpdate',
-      devOptions: {
-        enabled: true
-      },
+      strategies: 'injectManifest',
+      injectManifest: { globPatterns: ['**/*.{js,css,html,ico,png,svg}'] },
+      filename: 'sw.ts',
+      srcDir: "src/",
       manifest: false,
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        cleanupOutdatedCaches: true,
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
-            handler: 'NetworkFirst' as const,
-            options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 3,
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 5 // 5 minutes
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
-            handler: 'NetworkOnly',
-            method: 'POST',
-            options: {
-              backgroundSync: {
-                name: 'backgroundSyncQueue',
-                options: {
-                  maxRetentionTime: 24 * 60 // 24 hours
-                }
-              }
-            }
-          }
-        ]
-      }
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png']
     })
   ]
 })
