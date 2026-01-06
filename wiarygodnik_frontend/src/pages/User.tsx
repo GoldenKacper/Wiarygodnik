@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { userPageButton, userPageButtonIcon, userPageButtonText, userPageDivider } from "../Style.tsx";
 import SettingsIcon from '@mui/icons-material/Settings';
 import useKeycloak from "../features/auth/hooks/useKeycloak.ts";
-import { PushNotificationButton } from "../features/notification/components/PushNotificationButton.tsx";
+import { PushNotificationButton } from "../features/push/components/PushNotificationButton.tsx";
 
 function User() {
     const isOffline = !navigator.onLine;

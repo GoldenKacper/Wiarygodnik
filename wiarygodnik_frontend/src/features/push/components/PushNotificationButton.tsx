@@ -10,24 +10,25 @@ export const PushNotificationButton = () => {
   const online = useOnlineStatus();
 
   const [subscribed, setSubscribed] = useState(false)
-  const { subscribe, isSubscribed } = usePushNotifications()
+  const { subscribe, unsubscribe, isSubscribed } = usePushNotifications()
 
   const handleClick = async () => {
     try {
-      const sub = await subscribe()
-      console.log(sub);
-      if (sub) {
-        alert('Subscribed to push notifications! 🔔')
+      if (subscribed) {
+        const success = await unsubscribe();
+        if (success) setSubscribed(false);
+      } else {
+        const sub = await subscribe();
+        if (sub) setSubscribed(true);
       }
     } catch (err) {
-      console.error(err)
-      alert('Push subscription failed or denied.')
+      console.error(err);
     }
   }
 
   useEffect(() => {
     isSubscribed().then(setSubscribed)
-  }, [isSubscribed])
+  }, [])
 
   return (
     <Tooltip title={online ? "" : "Niedostępne w trybie offline"}>

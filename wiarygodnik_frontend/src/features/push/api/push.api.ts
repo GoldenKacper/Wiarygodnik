@@ -9,5 +9,9 @@ export const usePushApi = () => {
     await http.post(`${API_PUSH_PATH}/subscribe`, payload);
   };
 
-  return { postSubscribe };
+  const postUnsubscribe = async (payload: PushSubscription) => {
+    await http.post(`${API_PUSH_PATH}/unsubscribe`, payload);
+  };
+
+  return { postSubscribe, postUnsubscribe };
 };

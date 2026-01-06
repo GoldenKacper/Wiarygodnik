@@ -6,4 +6,5 @@ import pl.edu.p.lodz.wiarygodnik.rgs.model.PushSubscription
 interface PushSubscriptionRepository : JpaRepository<PushSubscription, Long> {
     fun findByUserId(userId: String): List<PushSubscription>
     fun findByEndpoint(endpoint: String): PushSubscription?
+    fun findByUserIdAndEndpoint(userId: String, endpoint: String): PushSubscription?
 }

@@ -40,9 +40,14 @@ export const useReportApi = () => {
   };
 
   const getMyReportStatus = async (requestId: string): Promise<ReportStatusResponse> => {
-    const response = await http.get<ReportStatusResponse>(`${API_REPORT_PATH}/status/${requestId}`);
+    const response = await http.get<ReportStatusResponse>(`${API_REPORT_PATH}/${requestId}/status`);
     return response.data;
   };
 
-  return { getAllMyReports, getMyReport, getMyReportStatus };
+  const deleteMyReport = async (requestId: string) => {
+    await http.delete(`${API_REPORT_PATH}/${requestId}`);
+  };
+
+
+  return { getAllMyReports, getMyReport, getMyReportStatus, deleteMyReport };
 };

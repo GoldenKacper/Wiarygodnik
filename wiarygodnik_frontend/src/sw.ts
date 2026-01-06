@@ -6,6 +6,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core'
+import { incrementUnreadNotifications, decrementUnreadNotifications } from './features/push/lib/badging-db';
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -35,15 +36,27 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/api'),
+  ({ url }) => url.pathname === '/api/analysis/process',
   new NetworkOnly({
     plugins: [
-      new BackgroundSyncPlugin('backgroundSyncQueue', {
+      new BackgroundSyncPlugin('analysisProcessBackgroundSyncQueue', {
         maxRetentionTime: 24 * 60
       })
     ]
   }),
   'POST'
+);
+
+registerRoute(
+  ({ url }) => /^\/api\/report\/.+$/.test(url.pathname),
+  new NetworkOnly({
+    plugins: [
+      new BackgroundSyncPlugin('deleteReportBackgroundSyncQueue', {
+        maxRetentionTime: 24 * 60
+      })
+    ]
+  }),
+  'DELETE'
 );
 
 
@@ -53,14 +66,21 @@ self.addEventListener('push', (event: PushEvent) => {
   const data = event.data.json();
 
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/web-app-manifest-192x192.png',
-      badge: '/web-app-manifest-192x192.png',
-      data: {
-        url: data.url
-      }
-    })
+    (async () => {
+      await incrementUnreadNotifications();
+
+      self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: '/web-app-manifest-192x192.png',
+        badge: '/web-app-manifest-192x192.png',
+        data: {
+          url: data.url
+        }
+      })
+
+      const allClients = await self.clients.matchAll();
+      allClients.forEach(client => client.postMessage({ type: 'SYNC_BADGE' }));
+    })()
   );
 })
 
@@ -68,6 +88,11 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
   event.notification.close();
 
   event.waitUntil(
-    self.clients.openWindow(event.notification.data.url)
+    (async () => {
+      await decrementUnreadNotifications();
+
+      self.clients.openWindow(event.notification.data.url)
+        .then(client => client?.postMessage({ type: 'SYNC_BADGE' }))
+    })()
   );
 })

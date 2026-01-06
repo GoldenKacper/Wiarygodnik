@@ -22,4 +22,10 @@ class PushController(private val repository: PushSubscriptionRepository) {
         }
     }
 
+    @PostMapping("/unsubscribe")
+    fun unsubscribe(@RequestBody request: PushSubscriptionDto) {
+        val currentUserId: String = PrincipalProvider.getCurrentUserId()
+        repository.findByUserIdAndEndpoint(currentUserId, request.endpoint)?.let { repository.delete(it) }
+    }
+
 }

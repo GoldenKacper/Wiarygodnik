@@ -6,16 +6,20 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { ReportListButton } from "./ReportListButton.tsx";
 import { useReportsList } from "../hooks/useReportList.ts";
 import { NewReportButton } from "./NewReportButton.tsx";
+import { useState } from "react";
 
 interface ReportListProps {
-    reload?: boolean;
+    requestId?: string;
 }
 
-export const ReportList = ({ reload }: ReportListProps) => {
+export const ReportList = ({ requestId }: ReportListProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const { reports, loading } = useReportsList(reload);
+    const [recentlyDeletedReqId, setRecentlyDeletedReqId] = useState<string | undefined>(undefined);
+
+    const { reports, loading } = useReportsList(recentlyDeletedReqId, requestId);
+
     return (
         <Box sx={{
             width: isMobile ? "100vw" : "280px",
@@ -55,7 +59,15 @@ export const ReportList = ({ reload }: ReportListProps) => {
                             flexDirection: "column",
                             overflowY: "auto",
                         }}>
-                            {reports.map((report, index) => <ReportListButton reportTitle={report.title} requestId={report.requestId} key={index} />)}
+                            {reports.map((report, index) =>
+                                <ReportListButton
+                                    reportTitle={report.title}
+                                    requestId={report.requestId}
+                                    setRecentlyDeletedReqId={setRecentlyDeletedReqId}
+                                    currentPageReqId={requestId}
+                                    key={index}
+                                />
+                            )}
                         </Box>
                     </>
                 }

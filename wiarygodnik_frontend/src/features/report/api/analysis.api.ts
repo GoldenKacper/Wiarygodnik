@@ -66,7 +66,7 @@ export const useAnalysisApi = () => {
   };
 
   const getMyAnalysisStatus = async (requestId: string): Promise<AnalysisStatusResponse> => {
-    const response = await http.get<AnalysisStatusResponse>(`${API_ANALYSIS_PATH}/status/${requestId}`);
+    const response = await http.get<AnalysisStatusResponse>(`${API_ANALYSIS_PATH}/${requestId}/status`);
     return response.data;
   };
 

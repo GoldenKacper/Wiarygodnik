@@ -8,10 +8,10 @@ function urlBase64ToUint8Array(base64String: string) {
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
   const rawData = atob(base64);
   return new Uint8Array(rawData.length).map((_, i) => rawData.charCodeAt(i));
-}
+};
 
 export const usePushNotifications = () => {
-  const { postSubscribe } = usePushApi();
+  const { postSubscribe, postUnsubscribe } = usePushApi();
 
   const askPermission = useCallback(async () => {
     if (!('Notification' in window)) {
@@ -24,7 +24,7 @@ export const usePushNotifications = () => {
     }
 
     return permission;
-  }, [])
+  }, []);
 
   const subscribe = useCallback(async (): Promise<PushSubscription | null> => {
     if (!('serviceWorker' in navigator)) return null;
@@ -45,7 +45,23 @@ export const usePushNotifications = () => {
     await postSubscribe(subscription);
 
     return subscription;
-  }, [askPermission])
+  }, [askPermission]);
+
+  const unsubscribe = async (): Promise<boolean | null> => {
+    if (!('serviceWorker' in navigator)) return null;
+    if (!('PushManager' in window)) return null;
+
+    const registration = await navigator.serviceWorker.ready;
+
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) return false;
+
+    const success = await subscription.unsubscribe();
+
+    await postUnsubscribe(subscription);
+
+    return success;
+  }
 
   const isSubscribed = useCallback(async (): Promise<boolean> => {
     if (!('serviceWorker' in navigator)) return false
@@ -55,7 +71,7 @@ export const usePushNotifications = () => {
     const subscription = await registration.pushManager.getSubscription()
 
     return subscription !== null
-  }, [])
+  }, [subscribe]);
 
-  return { askPermission, subscribe, isSubscribed }
+  return { askPermission, subscribe, unsubscribe, isSubscribed };
 }

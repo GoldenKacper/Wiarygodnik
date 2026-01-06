@@ -30,11 +30,17 @@ class ReportController(val reportService: ReportService) {
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/status/{requestId}")
-    fun getReportStatus(@PathVariable requestId: String): ResponseEntity<ReportStatusResponse> {
+    @GetMapping("/{requestId}/status")
+    fun getMyReportStatus(@PathVariable requestId: String): ResponseEntity<ReportStatusResponse> {
         val status: ReportStatus = reportService.getReportStatus(requestId)
         val response = ReportStatusResponse(requestId, status)
         return ResponseEntity.ok(response)
+    }
+
+    @DeleteMapping("/{requestId}")
+    fun deleteMyReport(@PathVariable requestId: String): ResponseEntity<String> {
+        reportService.deleteReport(requestId)
+        return ResponseEntity.noContent().build()
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -13,7 +13,6 @@ import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 import pl.edu.p.lodz.wiarygodnik.rgs.repo.ReportRepository
 import pl.edu.p.lodz.wiarygodnik.rgs.security.PrincipalProvider
-import pl.edu.p.lodz.wiarygodnik.rgs.service.notifications.PushNotificationService
 import pl.edu.p.lodz.wiarygodnik.rgs.service.notifications.ReportGeneratedEvent
 
 @Service
@@ -65,6 +64,11 @@ class ReportService(
     fun findAllReportsForCurrentUser(): List<Report> {
         val currentUserId = PrincipalProvider.getCurrentUserId()
         return reportRepository.findAllByUserIdAndStatus(currentUserId, GENERATED)
+    }
+
+    fun deleteReport(requestId: String) {
+        val currentUserId = PrincipalProvider.getCurrentUserId()
+        reportRepository.findReportByRequestIdAndUserId(requestId, currentUserId)?.let { reportRepository.delete(it) }
     }
 
 }

@@ -26,7 +26,7 @@ class AnalysisController(
         return ResponseEntity.status(CREATED).body(AnalyseResponse(analysisEntity.requestId))
     }
 
-    @GetMapping("/status/{requestId}")
+    @GetMapping("/{requestId}/status")
     fun getAnalysisStatus(@PathVariable requestId: String): ResponseEntity<AnalysisStatusResponse> =
         ResponseEntity.ok(AnalysisStatusResponse(analysisService.getAnalysisStatus(requestId)))
 

@@ -12,6 +12,7 @@ import { ReportLoading } from "../features/report/components/ReportLoading.tsx";
 import { enqueueSnackbar } from "notistack";
 import { AnalysisStatus } from "../features/report/domain/AnalysisStatus.ts";
 import { useAnalysis } from "../features/report/hooks/useAnalysis.ts";
+import { clearUnreadNotifications } from "../features/push/lib/badging-db.ts";
 
 function Reports() {
     const isMobile = useIsMobile();
@@ -31,11 +32,20 @@ function Reports() {
         }
     }, [status]);
 
+    useEffect(() => {
+        const markAllAsRead = async () => {
+            await clearUnreadNotifications();
+            navigator.clearAppBadge();
+        };
+
+        markAllAsRead();
+    }, [report]);
+
     return (
         <>
             <NavBar menuActive={menuActive} setMenuActive={setMenuActive} />
             <Box sx={{ display: "flex" }}>
-                {menuActive && <ReportList reload={!!report} />}
+                {menuActive && <ReportList requestId={requestId} />}
                 <Box sx={{ display: "flex", flexDirection: "column", width: isMobile ? "100%" : "80%", height: "calc(100vh - 100px)", padding: "10px", margin: "auto" }}>
                     {report && analysis ? <ReportContent report={report} analysis={analysis} /> : status ? <ReportLoading loadingStatus={status} /> : <ReportSearch />}
                 </Box>
