@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import pl.edu.p.lodz.wiarygodnik.cas.amqp.RabbitMQProducer
 import pl.edu.p.lodz.wiarygodnik.cas.model.Analysis
 import pl.edu.p.lodz.wiarygodnik.cas.model.AnalysisStatus.*
-import pl.edu.p.lodz.wiarygodnik.cas.model.dto.AnalysisResultMessage
+import pl.edu.p.lodz.wiarygodnik.cas.model.message.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentAnalysis
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentComparison
 import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ScrapedWebContent

@@ -5,12 +5,14 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
 import org.springframework.transaction.annotation.Transactional
+import pl.edu.p.lodz.wiarygodnik.rgs.amqp.RabbitMQProducer
 import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus.FAILED
 import pl.edu.p.lodz.wiarygodnik.rgs.model.ReportStatus.GENERATED
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.DeleteAnalysisMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.repo.ReportRepository
 import pl.edu.p.lodz.wiarygodnik.rgs.security.PrincipalProvider
 import pl.edu.p.lodz.wiarygodnik.rgs.service.notifications.ReportGeneratedEvent
@@ -19,7 +21,8 @@ import pl.edu.p.lodz.wiarygodnik.rgs.service.notifications.ReportGeneratedEvent
 class ReportService(
     private val analysisReportGenerator: AiAnalysisReportGenerator,
     private val reportRepository: ReportRepository,
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
+    private val rabbitProducer: RabbitMQProducer,
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -69,6 +72,7 @@ class ReportService(
     fun deleteReport(requestId: String) {
         val currentUserId = PrincipalProvider.getCurrentUserId()
         reportRepository.findReportByRequestIdAndUserId(requestId, currentUserId)?.let { reportRepository.delete(it) }
+        rabbitProducer.sendDeleteEvent(DeleteAnalysisMessage(requestId))
     }
 
 }

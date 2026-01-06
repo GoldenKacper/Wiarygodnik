@@ -1,8 +1,7 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.model
 
 import jakarta.persistence.*
-import jakarta.persistence.GenerationType.IDENTITY
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 
 enum class ReportStatus {

@@ -5,7 +5,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 import pl.edu.p.lodz.wiarygodnik.rgs.amqp.RabbitMQConfig.Companion.ANALYSIS_RESULTS_QUEUE
 import pl.edu.p.lodz.wiarygodnik.rgs.model.Report
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.service.ReportService
 
 @Component

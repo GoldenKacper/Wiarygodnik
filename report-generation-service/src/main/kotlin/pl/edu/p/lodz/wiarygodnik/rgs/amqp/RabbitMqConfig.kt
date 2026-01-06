@@ -17,8 +17,12 @@ class RabbitMQConfig {
 
     companion object {
         const val EXCHANGE_NAME: String = "wiarygodnik.exchange"
+
         const val ANALYSIS_RESULTS_QUEUE: String = "content-analysis-service.results.queue"
         const val ANALYSIS_ROUTING_KEY: String = "analysis.key"
+
+        const val DELETE_ANALYSIS_QUEUE: String = "report-generation-service.delete.queue"
+        const val DELETE_ANALYSIS_ROUTING_KEY: String = "delete-analysis.key"
     }
 
     @Bean
@@ -34,6 +38,16 @@ class RabbitMQConfig {
     @Bean
     fun reportCreatedBinding(): Binding {
         return BindingBuilder.bind(contentAnalysisServiceResultsQueue()).to(exchange()).with(ANALYSIS_ROUTING_KEY)
+    }
+
+    @Bean
+    fun deleteAnalysisQueue(): Queue {
+        return Queue(DELETE_ANALYSIS_QUEUE)
+    }
+
+    @Bean
+    fun deleteAnalysisBinding(): Binding {
+        return BindingBuilder.bind(deleteAnalysisQueue()).to(exchange()).with(DELETE_ANALYSIS_ROUTING_KEY)
     }
 
     @Bean

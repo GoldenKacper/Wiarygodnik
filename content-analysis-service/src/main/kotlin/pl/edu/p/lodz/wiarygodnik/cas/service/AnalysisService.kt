@@ -44,4 +44,8 @@ class AnalysisService(private val analysisRepository: AnalysisRepository) {
         analysisRepository.save(analysis)
     }
 
+    fun deleteAnalysis(requestId: String) {
+        analysisRepository.findAnalysisByRequestId(requestId)?.let { analysisRepository.delete(it) }
+    }
+
 }

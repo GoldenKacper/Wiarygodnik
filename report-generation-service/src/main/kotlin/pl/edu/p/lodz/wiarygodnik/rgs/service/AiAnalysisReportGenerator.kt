@@ -7,7 +7,7 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResultMessage
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
 
 @Component

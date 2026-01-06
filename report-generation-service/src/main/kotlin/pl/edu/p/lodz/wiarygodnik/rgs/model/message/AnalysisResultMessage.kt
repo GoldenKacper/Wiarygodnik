@@ -1,4 +1,4 @@
-package pl.edu.p.lodz.wiarygodnik.rgs.model.dto
+package pl.edu.p.lodz.wiarygodnik.rgs.model.message
 
 enum class Sentiment {
     NEUTRAL, POSITIVE, NEGATIVE, ALARMIST, IRONIC, PERSUASIVE, AGGRESSIVE, FORMAL
