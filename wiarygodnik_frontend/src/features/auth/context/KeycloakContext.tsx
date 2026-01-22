@@ -79,13 +79,11 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
         const keycloak = createKeycloak();
 
         restoreOfflineSession(keycloak, setAuthenticated);
-
         if (navigator.onLine) {
             initOnline(keycloak, setAuthenticated)
-                .catch(() => setAuthenticated(false));
+                .catch(() => setAuthenticated(false))
+                .finally(() => setKeycloak(keycloak));
         }
-
-        setKeycloak(keycloak);
     }, []);
 
     useEffect(() => {

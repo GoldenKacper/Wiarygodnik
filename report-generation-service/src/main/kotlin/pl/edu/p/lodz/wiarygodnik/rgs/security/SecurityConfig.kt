@@ -18,6 +18,7 @@ class SecurityConfig {
             cors { }
             csrf { disable() }
             authorizeHttpRequests {
+                authorize("/actuator/health", permitAll)
                 authorize("/api/report/**", hasRole("USER"))
                 authorize("/api/push/**", hasRole("USER"))
             }
