@@ -22,8 +22,8 @@ class ReportGeneratedListener(
             .forEach(Consumer { sub: PushSubscription ->
                 pushService.send(
                     sub,
-                    "Analysis completed",
-                    "Your report is ready",
+                    "Analiza zakończona!",
+                    "Twój raport jest gotowy.",
                     "/reports/" + event.requestId
                 )
             })

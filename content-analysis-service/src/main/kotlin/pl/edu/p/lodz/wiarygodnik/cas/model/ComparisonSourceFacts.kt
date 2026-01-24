@@ -7,6 +7,6 @@ import jakarta.persistence.GenerationType.SEQUENCE
 class ComparisonSourceFacts(
     @ManyToOne @JoinColumn(name = "comparison_summary_id") val comparisonSummary: ComparisonSummary,
     @Column(columnDefinition = "TEXT") val sourceUrl: String,
-    @ElementCollection @CollectionTable(name = "source_facts") val facts: Set<String> = mutableSetOf(),
+    @ElementCollection @CollectionTable(name = "source_facts") @Column(columnDefinition = "TEXT") val facts: Set<String> = mutableSetOf(),
     @Id @GeneratedValue(strategy = SEQUENCE) val id: Long? = null
 )

@@ -1,25 +1,24 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.service
 
-import com.fasterxml.jackson.core.JsonParseException
 import org.springframework.ai.chat.client.ChatClient
+import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor
+import org.springframework.ai.chat.client.advisor.api.BaseAdvisor
 import org.springframework.ai.chat.model.ChatModel
 import org.springframework.core.io.ResourceLoader
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
-import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 
 @Component
 class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader: ResourceLoader) {
 
     private val chatClient = ChatClient.create(chatModel)
+    private val outputValidationAdvisor = StructuredOutputValidationAdvisor.builder()
+        .outputType(ReportGenerationResult::class.java)
+        .maxRepeatAttempts(3)
+        .advisorOrder(BaseAdvisor.HIGHEST_PRECEDENCE + 1000)
+        .build()
 
-    @Retryable(
-        value = [JsonParseException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delay = 0)
-    )
     fun generate(input: AnalysisResultMessage): ReportGenerationResult {
         val analysisReportGenerationPrompt: String = prepareAnalysisReportGenerationPrompt(input)
         return callChatGeneration(analysisReportGenerationPrompt)
@@ -28,6 +27,7 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
     private fun callChatGeneration(input: String): ReportGenerationResult = chatClient.prompt()
         .system { system -> system.text(readSystemPrompt()) }
         .user { user -> user.text(input) }
+        .advisors(outputValidationAdvisor)
         .call()
         .entity(ReportGenerationResult::class.java)
         ?: throw RuntimeException("LLM returned a null object while generating a report.")

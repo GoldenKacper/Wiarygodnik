@@ -22,6 +22,7 @@ class ContentSummarizationAgent(chatModel: ChatModel) :
            - Wypisz najważniejsze słowa kluczowe opisujące temat artykułu.
            - Nie uwzględniaj elementów strony ani przypadkowych słów (np. „menu”, „reklama”, „footer”).
            - Używaj pojedynczych słów lub krótkich fraz.
+           - Nie więcej niż 8 słów lub krótkich fraz.
 
         ### Ważne zasady filtrowania treści
         - Bierz pod uwagę tylko właściwą treść artykułu.
