@@ -2,11 +2,11 @@ package pl.edu.p.lodz.wiarygodnik.cas.service.agent
 
 import org.springframework.ai.chat.model.ChatModel
 import org.springframework.stereotype.Component
-import pl.edu.p.lodz.wiarygodnik.cas.model.dto.ContentSentiment
+import pl.edu.p.lodz.wiarygodnik.cas.model.dto.SentimentSummaryDto
 
 @Component
 class ContentSentimentAgent(chatModel: ChatModel) :
-    AbstractAgent<ContentSentiment>(chatModel, ContentSentiment::class.java) {
+    AbstractAgent<SentimentSummaryDto>(chatModel, SentimentSummaryDto::class.java) {
     override fun systemPrompt(): String = """
         Jesteś systemem analizującym nacechowanie tekstów artykułów informacyjnych. Otrzymasz treść artykułu (uprzednio oczyszczoną z elementów technicznych strony lub w surowej formie).
         
@@ -38,21 +38,5 @@ class ContentSentimentAgent(chatModel: ChatModel) :
            - perswazyjny - PERSUASIVE,
            - agresywny - AGGRESSIVE, 
            - formalny - FORMAL.
-           
-        ### FORMAT ODPOWIEDZI:
-        
-        NACECHOWANIE GŁÓWNE:  
-        [krótki opis ogólnego tonu tekstu]
-        
-        LISTA NACECHOWAŃ Z PRZYKŁADAMI:  
-        - [rodzaj nacechowania 1]  
-          - "[cytat 1]" – [krótki komentarz]  
-          - "[cytat 2]" – [krótki komentarz]  
-        - [rodzaj nacechowania 2]  
-          - "[cytat 1]" – [krótki komentarz]  
-          - "[cytat 2]" – [krótki komentarz]  
-        - [...]
-        
-        Nie dodawaj nic ponad ten format i nie używaj innych języków niż polski.
     """.trimIndent()
 }

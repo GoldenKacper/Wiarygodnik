@@ -3,8 +3,10 @@ import App from './App'
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "./theme.ts";
 import "./index.css"
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { StrictMode } from 'react';
+import { registerSW } from 'virtual:pwa-register'
+
+registerSW({ immediate: true });
 
 ReactDOM.createRoot(document.getElementById('root')!)
     .render(
@@ -15,5 +17,3 @@ ReactDOM.createRoot(document.getElementById('root')!)
             </ThemeProvider>
         </StrictMode>
     );
-
-serviceWorkerRegistration.register();

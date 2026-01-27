@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Raports from "../pages/Raports";
+import Reports from "../pages/Reports";
 import ProtectedRoutes from "./ProtectedRoutes";
 import NotFound from "../pages/NotFound";
 import User from "../pages/User";
@@ -11,7 +11,9 @@ export default function AppRouter() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route element={<ProtectedRoutes roles={["user"]} />}>
-                    <Route path="/raports" element={<Raports />} />
+                    <Route path="/reports" element={<Reports />}>
+                        <Route path=":requestId" element={<Reports />} />
+                    </Route>
                     <Route path="/user" element={<User />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />

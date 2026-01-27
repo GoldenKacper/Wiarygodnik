@@ -1,26 +1,35 @@
 package pl.edu.p.lodz.wiarygodnik.rgs.service
 
 import org.springframework.ai.chat.client.ChatClient
+import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor
+import org.springframework.ai.chat.client.advisor.api.BaseAdvisor
 import org.springframework.ai.chat.model.ChatModel
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
-import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.AnalysisResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.dto.ReportGenerationResult
+import pl.edu.p.lodz.wiarygodnik.rgs.model.message.AnalysisResultMessage
 
 @Component
 class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader: ResourceLoader) {
 
     private val chatClient = ChatClient.create(chatModel)
+    private val outputValidationAdvisor = StructuredOutputValidationAdvisor.builder()
+        .outputType(ReportGenerationResult::class.java)
+        .maxRepeatAttempts(3)
+        .advisorOrder(BaseAdvisor.HIGHEST_PRECEDENCE + 1000)
+        .build()
 
-    fun generate(input: AnalysisResult): String {
+    fun generate(input: AnalysisResultMessage): ReportGenerationResult {
         val analysisReportGenerationPrompt: String = prepareAnalysisReportGenerationPrompt(input)
         return callChatGeneration(analysisReportGenerationPrompt)
     }
 
-    private fun callChatGeneration(input: String): String = chatClient.prompt()
+    private fun callChatGeneration(input: String): ReportGenerationResult = chatClient.prompt()
         .system { system -> system.text(readSystemPrompt()) }
         .user { user -> user.text(input) }
+        .advisors(outputValidationAdvisor)
         .call()
-        .content()
+        .entity(ReportGenerationResult::class.java)
         ?: throw RuntimeException("LLM returned a null object while generating a report.")
 
     private fun readSystemPrompt(): String =
@@ -29,9 +38,9 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
             .bufferedReader()
             .readText()
 
-    private fun prepareAnalysisReportGenerationPrompt(analysisResult: AnalysisResult): String = """
+    private fun prepareAnalysisReportGenerationPrompt(analysisResult: AnalysisResultMessage): String = """
         ### Analiza nacechowania:
-        ${analysisResult.contentAnalysis.sentiment.description}
+        ${analysisResult.contentAnalysis.sentiment.summary}
         
         ### Przykłady nacechowania:
         ${
@@ -54,18 +63,24 @@ class AiAnalysisReportGenerator(chatModel: ChatModel, private val resourceLoader
         }
     }
         
+        ${
+        analysisResult.contentComparison?.let {
+            """
         ### Porównanie z innymi źródłami:
-        ${analysisResult.contentComparison.description}
-        
+        ${it.description}
+
         ### Przykłady porównań:
         ${
-        analysisResult.contentComparison.sourcesFacts.map { source ->
-            """
+                it.sourcesFacts.map { source ->
+                    """
                 
                 Źródło: ${source.url}
                 Fakty: ${source.facts.joinToString { it }}
                 
             """.trimIndent()
+                }
+            }
+            """
         }
     }
     """.trimIndent()

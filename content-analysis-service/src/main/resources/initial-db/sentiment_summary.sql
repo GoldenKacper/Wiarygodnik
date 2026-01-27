@@ -1,0 +1,5 @@
+INSERT INTO public.sentiment_summary (id, summary) VALUES (1, 'Artykuł wykorzystuje negatywny, alarmistyczny oraz ironiczny ton, aby podkreślić kontrowersje dotyczące zdrowia Donalda Trumpa, jednocześnie prezentując jego własne usprawiedliwienia w sposób perswazyjny.');
+INSERT INTO public.sentiment_summary (id, summary) VALUES (2, 'Artykuł zachowuje pozytywny, sensacyjny ton, celebrując narodziny nowego członka rodziny, jednocześnie wykorzystując chwytliwe wyrażenia i wywołujące ciekawość wezwania do działania, co nadaje mu perswazyjny charakter.');
+INSERT INTO public.sentiment_summary (id, summary) VALUES (5, 'Tekst ma w większości neutralny wydźwięk, ale zawiera fragmenty radości (pozytywne), krytyki i szarpania (agresywne) oraz lekko ironicznego komentarza.');
+
+SELECT setval('sentiment_summary_seq', (SELECT MAX(id) FROM public.sentiment_summary));

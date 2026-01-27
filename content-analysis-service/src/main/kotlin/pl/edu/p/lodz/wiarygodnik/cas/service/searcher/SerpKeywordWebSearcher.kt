@@ -15,7 +15,7 @@ class SerpKeywordWebSearcher(
 
     private val webClient: WebClient = webClientBuilder.baseUrl(baseUrl).build()
 
-    override fun searchTopUrls(keywords: List<String>): List<String> =
+    override fun searchTopUrls(keywords: Set<String>): List<String> =
         webClient.get()
             .uri { builder ->
                 builder.path("/search.json")

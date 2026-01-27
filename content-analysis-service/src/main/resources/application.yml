@@ -2,6 +2,12 @@ spring:
   application:
     name: content-analysis-service
 
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: https://localhost:8888/realms/wiarygodnik
+
   rabbitmq:
     host: localhost
     port: 5672
@@ -15,6 +21,20 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations:
+        - classpath:initial-db/comparison_summary.sql
+        - classpath:initial-db/comparison_source_facts.sql
+        - classpath:initial-db/sentiment_summary.sql
+        - classpath:initial-db/sentiment_example.sql
+        - classpath:initial-db/sentiment_example_quote.sql
+        - classpath:initial-db/source_summary.sql
+        - classpath:initial-db/source_facts.sql
+        - classpath:initial-db/source_keywords.sql
+        - classpath:initial-db/analysis.sql
 
   ai:
     ollama:
@@ -22,18 +42,45 @@ spring:
         options:
           model: "gpt-oss"
 
+server:
+  port: 8081
+  ssl:
+    enabled: true
+    key-store: classpath:keystore/wiarygodnik.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: wiarygodnik
+
+cors:
+  allowed-origins:
+    - http://localhost:5173
+    - https://localhost:5173
+    - http://localhost:4173
+    - https://localhost:4173
+    - http://localhost
+    - https://localhost
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+  allowed-headers:
+    - "*"
+  exposed-headers:
+    - "*"
+  allow-credentials: true
+  max-age: 3600
+
 logging:
   logstash:
     server: "localhost:5000"
-  level:
-    org.springframework.security: DEBUG
 
 jina:
   url: "https://r.jina.ai"
 
 serpapi:
   url: "https://serpapi.com"
-  limit: 1
+  limit: 5
 
 management:
   endpoints:

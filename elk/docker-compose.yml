@@ -13,12 +13,13 @@ services:
         - network
 
   logstash:
+    platform: "linux/amd64"
     image: logstash:7.10.1
     command: -f /etc/logstash/conf.d/
     volumes:
       - ./logstash/:/etc/logstash/conf.d/
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     depends_on:
@@ -27,6 +28,7 @@ services:
         - network
 
   kibana:
+    platform: "linux/amd64"
     image: kibana:7.10.1
     volumes:
       - ./kibana/:/usr/share/kibana/config/

@@ -1,18 +1,35 @@
 services:
 
+  wiarygodnik-ui:
+    build:
+      context: wiarygodnik_frontend
+    ports:
+      - "80:80"
+    networks:
+      - wiarygodnik
+    depends_on:
+      - content-analysis-service
+      - report-generation-service
+      - keycloak
+
   content-analysis-service:
     build:
       context: content-analysis-service
     image: content-analysis-service:latest
     deploy:
-      replicas: 2
+      replicas: 1
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://content-analysis-service-db:5431/content-analysis-service-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://content-analysis-service-db:5432/content-analysis-service-db
       - SPRING_RABBITMQ_HOST=rabbitmq
       - LOGGING_LOGSTASH_SERVER=logstash:5000
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI=http://keycloak:8888/realms/wiarygodnik
     networks:
       - wiarygodnik
-      - elk_network
+#      - elk_network
     depends_on:
       - content-analysis-service-db
       - rabbitmq
@@ -36,14 +53,17 @@ services:
       context: report-generation-service
     image: report-generation-service:latest
     deploy:
-      replicas: 2
+      replicas: 1
+    ports:
+      - "8082:8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://report-generation-service-db:5432/report-generation-service-db
       - SPRING_RABBITMQ_HOST=rabbitmq
       - LOGGING_LOGSTASH_SERVER=logstash:5000
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI=http://keycloak:8888/realms/wiarygodnik
     networks:
       - wiarygodnik
-      - elk_network
+#      - elk_network
     depends_on:
       - report-generation-service-db
       - rabbitmq
@@ -59,70 +79,6 @@ services:
       POSTGRES_DB: report-generation-service-db
     volumes:
       - report-generation-service-db:/var/lib/postgresql/data
-    networks:
-      - wiarygodnik
-
-  credibility-service:
-    build:
-      context: CredabilityService
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - rabbitmq
-      - credibility-db
-    environment:
-      - SPRING_PROFILES_ACTIVE=default
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://credibility-db:5432/credibility
-      - SPRING_RABBITMQ_HOST=rabbitmq
-      - LOGGING_LOGSTASH_SERVER=logstash:5000
-    networks:
-      - wiarygodnik
-      - elk_network
-
-  credibility-db:
-    image: postgres:15
-    container_name: credibility-db
-    restart: always
-    ports:
-      - "5431:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: credibility
-    volumes:
-      - postgres_data_credibility:/var/lib/postgresql/data
-    networks:
-      - wiarygodnik
-
-  content-fetcher-service:
-    build:
-      context: ./ContentFetcher/content_fetcher
-      dockerfile: Dockerfile
-    env_file:
-      - ./ContentFetcher/content_fetcher/.env
-    depends_on:
-      - content-fetcher-db
-      - rabbitmq
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8080"
-    ports:
-      - "8090:8080"
-    networks:
-      - wiarygodnik
-      - elk_network
-
-  content-fetcher-db:
-    image: postgres:17
-    ports:
-      - "5430:5432"
-    environment:
-      POSTGRES_USER: wiarygodnik
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: contentfetcherdb
-    volumes:
-      - contentfetcherpgdata:/var/lib/postgresql/data
     networks:
       - wiarygodnik
 
@@ -149,6 +105,7 @@ services:
       - wiarygodnik
     depends_on:
       - content-analysis-service
+      - report-generation-service
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4
@@ -160,10 +117,19 @@ services:
       KC_DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTPS_PORT: 8888
+      KC_HTTPS_KEY_STORE_FILE: /opt/keycloak/conf/wiarygodnik.p12
+      KC_HTTPS_KEY_STORE_PASSWORD: changeit
     command:
       - start-dev
+      - --import-realm
     ports:
-      - "8888:8080"
+      - "8888:8888"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import/
+      - ./keycloak/wiarygodnik.p12:/opt/keycloak/conf/wiarygodnik.p12:ro
+    networks:
+      - wiarygodnik
     depends_on:
       - keycloak-db
 
@@ -176,16 +142,16 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - keycloak-db:/var/lib/postgresql/data
+    networks:
+      - wiarygodnik
 
 volumes:
   content-analysis-service-db:
   report-generation-service-db:
   keycloak-db:
-  postgres_data_credibility:
-  contentfetcherpgdata:
 
 networks:
   wiarygodnik:
     driver: bridge
-  elk_network:
-    external: true
+#  elk_network:
+#    external: true

@@ -1,9 +1,9 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    kotlin("plugin.jpa") version "1.9.25"
     id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "1.9.25"
     id("org.sonarqube") version "5.0.0.4638"
 }
 
@@ -23,16 +23,24 @@ repositories {
 extra["springAiVersion"] = "1.1.0"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("org.springframework.ai:spring-ai-starter-model-ollama")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-logging")
+
+    implementation("nl.martijndwars:web-push:5.1.2")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.83")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
+    implementation("org.apache.httpcomponents:httpcore:4.4.16")
 
     runtimeOnly("org.postgresql:postgresql")
 

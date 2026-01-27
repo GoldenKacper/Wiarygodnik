@@ -18,6 +18,7 @@ class SecurityConfig {
             cors { }
             csrf { disable() }
             authorizeHttpRequests {
+                authorize("/actuator/health", permitAll)
                 authorize("/api/analysis/**", hasRole("USER"))
             }
             oauth2ResourceServer {
