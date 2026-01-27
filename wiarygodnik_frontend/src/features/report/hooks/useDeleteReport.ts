@@ -5,12 +5,7 @@ export const useDeleteReport = () => {
     const { deleteMyReport } = useReportApi();
 
     const deleteReport = useCallback(async (requestId: string) => {
-        try {
-            await deleteMyReport(requestId);
-            return true;
-        } catch (err: any) {
-            return false;
-        }
+        await deleteMyReport(requestId);
     }, []);
 
     return { deleteReport };

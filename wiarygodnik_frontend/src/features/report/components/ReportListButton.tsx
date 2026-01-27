@@ -3,6 +3,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { sideMenuButton } from "../../../Style.tsx";
 import { useNavigate } from "react-router-dom";
 import { useDeleteReport } from "../hooks/useDeleteReport.ts";
+import { useOnlineStatus } from "../../../hooks/useOnlineStatus.ts";
+import { enqueueSnackbar } from "notistack";
 
 interface ReportListButtonProps {
     reportTitle: string;
@@ -12,6 +14,7 @@ interface ReportListButtonProps {
 }
 
 export const ReportListButton = ({ reportTitle, requestId, setRecentlyDeletedReqId, currentPageReqId }: ReportListButtonProps) => {
+    const online = useOnlineStatus();
     const navigate = useNavigate();
 
     const { deleteReport } = useDeleteReport();
@@ -20,11 +23,19 @@ export const ReportListButton = ({ reportTitle, requestId, setRecentlyDeletedReq
 
     const handleDelete = async () => {
         if (!window.confirm("Czy na pewno chcesz usunąć raport?")) return;
-        await deleteReport(requestId);
-        setRecentlyDeletedReqId(requestId);
+        try {
+            await deleteReport(requestId);
+            setRecentlyDeletedReqId(requestId);
 
-        if (currentPageReqId && currentPageReqId === requestId) {
-            navigate('/reports')
+            if (currentPageReqId && currentPageReqId === requestId) {
+                navigate('/reports')
+            }
+        } catch (e) {
+            if (!online) {
+                enqueueSnackbar("Raport zostanie usunięty automatycznie po przywróceniu połączenia.", { variant: 'success' });
+                return;
+            }
+            return;
         }
     }
 

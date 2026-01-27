@@ -32,8 +32,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
-    implementation("org.springframework.retry:spring-retry")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.ai:spring-ai-starter-model-ollama")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
